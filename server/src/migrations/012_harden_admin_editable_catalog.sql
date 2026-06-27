@@ -1,0 +1,41 @@
+-- Migration: 012_harden_admin_editable_catalog.sql
+-- Description: Ensure admin-editable packages and extras have all persistence columns
+
+ALTER TABLE packages ADD COLUMN IF NOT EXISTS features JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE packages ADD COLUMN IF NOT EXISTS coverage_time TEXT;
+ALTER TABLE packages ADD COLUMN IF NOT EXISTS team TEXT;
+ALTER TABLE packages ADD COLUMN IF NOT EXISTS deliveries TEXT;
+ALTER TABLE packages ADD COLUMN IF NOT EXISTS observations TEXT;
+ALTER TABLE packages ADD COLUMN IF NOT EXISTS active BOOLEAN DEFAULT TRUE;
+ALTER TABLE packages ADD COLUMN IF NOT EXISTS sort_order INTEGER DEFAULT 0;
+ALTER TABLE packages ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE packages ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE packages ALTER COLUMN features SET DEFAULT '[]'::jsonb;
+ALTER TABLE packages ALTER COLUMN active SET DEFAULT TRUE;
+ALTER TABLE packages ALTER COLUMN sort_order SET DEFAULT 0;
+
+UPDATE packages SET features = '[]'::jsonb WHERE features IS NULL;
+UPDATE packages SET active = TRUE WHERE active IS NULL;
+UPDATE packages SET sort_order = 0 WHERE sort_order IS NULL;
+
+ALTER TABLE extras ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE extras ADD COLUMN IF NOT EXISTS price NUMERIC NOT NULL DEFAULT 0;
+ALTER TABLE extras ADD COLUMN IF NOT EXISTS active BOOLEAN DEFAULT TRUE;
+ALTER TABLE extras ADD COLUMN IF NOT EXISTS sort_order INTEGER DEFAULT 0;
+ALTER TABLE extras ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE extras ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE extras ALTER COLUMN price SET DEFAULT 0;
+ALTER TABLE extras ALTER COLUMN active SET DEFAULT TRUE;
+ALTER TABLE extras ALTER COLUMN sort_order SET DEFAULT 0;
+
+UPDATE extras SET price = 0 WHERE price IS NULL;
+UPDATE extras SET active = TRUE WHERE active IS NULL;
+UPDATE extras SET sort_order = 0 WHERE sort_order IS NULL;
+
+CREATE INDEX IF NOT EXISTS idx_packages_admin_listing
+  ON packages (category, sort_order, name);
+
+CREATE INDEX IF NOT EXISTS idx_extras_admin_listing
+  ON extras (sort_order, name);

@@ -1,0 +1,63 @@
+-- Migration: 014_harden_admin_settings_catalog_persistence.sql
+-- Description: Ensure admin settings, packages and extras columns exist before saves
+
+ALTER TABLE business_settings ADD COLUMN IF NOT EXISTS company_name TEXT;
+ALTER TABLE business_settings ADD COLUMN IF NOT EXISTS trade_name TEXT;
+ALTER TABLE business_settings ADD COLUMN IF NOT EXISTS cnpj TEXT;
+ALTER TABLE business_settings ADD COLUMN IF NOT EXISTS phone TEXT;
+ALTER TABLE business_settings ADD COLUMN IF NOT EXISTS whatsapp TEXT;
+ALTER TABLE business_settings ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE business_settings ADD COLUMN IF NOT EXISTS site TEXT;
+ALTER TABLE business_settings ADD COLUMN IF NOT EXISTS website TEXT;
+ALTER TABLE business_settings ADD COLUMN IF NOT EXISTS instagram TEXT;
+ALTER TABLE business_settings ADD COLUMN IF NOT EXISTS address TEXT;
+ALTER TABLE business_settings ADD COLUMN IF NOT EXISTS budget_validity_days INTEGER DEFAULT 5;
+ALTER TABLE business_settings ADD COLUMN IF NOT EXISTS pdf_validity TEXT;
+ALTER TABLE business_settings ADD COLUMN IF NOT EXISTS pdf_footer TEXT;
+ALTER TABLE business_settings ADD COLUMN IF NOT EXISTS payment_terms TEXT;
+ALTER TABLE business_settings ADD COLUMN IF NOT EXISTS contract_text TEXT;
+ALTER TABLE business_settings ADD COLUMN IF NOT EXISTS institutional_text TEXT;
+ALTER TABLE business_settings ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE business_settings ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
+
+UPDATE business_settings
+SET
+  whatsapp = COALESCE(NULLIF(whatsapp, ''), phone),
+  phone = COALESCE(NULLIF(phone, ''), whatsapp),
+  website = COALESCE(NULLIF(website, ''), site),
+  site = COALESCE(NULLIF(site, ''), website)
+WHERE whatsapp IS NULL OR phone IS NULL OR website IS NULL OR site IS NULL;
+
+ALTER TABLE packages ADD COLUMN IF NOT EXISTS features JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE packages ADD COLUMN IF NOT EXISTS observations TEXT;
+ALTER TABLE packages ADD COLUMN IF NOT EXISTS coverage_time TEXT;
+ALTER TABLE packages ADD COLUMN IF NOT EXISTS team TEXT;
+ALTER TABLE packages ADD COLUMN IF NOT EXISTS deliveries TEXT;
+ALTER TABLE packages ADD COLUMN IF NOT EXISTS active BOOLEAN DEFAULT TRUE;
+ALTER TABLE packages ADD COLUMN IF NOT EXISTS sort_order INTEGER DEFAULT 0;
+ALTER TABLE packages ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE packages ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE packages ALTER COLUMN features SET DEFAULT '[]'::jsonb;
+ALTER TABLE packages ALTER COLUMN active SET DEFAULT TRUE;
+ALTER TABLE packages ALTER COLUMN sort_order SET DEFAULT 0;
+
+UPDATE packages SET features = '[]'::jsonb WHERE features IS NULL;
+UPDATE packages SET active = TRUE WHERE active IS NULL;
+UPDATE packages SET sort_order = 0 WHERE sort_order IS NULL;
+
+ALTER TABLE extras ADD COLUMN IF NOT EXISTS name TEXT;
+ALTER TABLE extras ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE extras ADD COLUMN IF NOT EXISTS price NUMERIC DEFAULT 0;
+ALTER TABLE extras ADD COLUMN IF NOT EXISTS active BOOLEAN DEFAULT TRUE;
+ALTER TABLE extras ADD COLUMN IF NOT EXISTS sort_order INTEGER DEFAULT 0;
+ALTER TABLE extras ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE extras ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE extras ALTER COLUMN price SET DEFAULT 0;
+ALTER TABLE extras ALTER COLUMN active SET DEFAULT TRUE;
+ALTER TABLE extras ALTER COLUMN sort_order SET DEFAULT 0;
+
+UPDATE extras SET price = 0 WHERE price IS NULL;
+UPDATE extras SET active = TRUE WHERE active IS NULL;
+UPDATE extras SET sort_order = 0 WHERE sort_order IS NULL;
