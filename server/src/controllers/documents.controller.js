@@ -1,32 +1,14 @@
 import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
 import pool from '../db.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const storagePath = path.resolve(
-  process.env.STORAGE_DIR || path.resolve(__dirname, '../../storage/documents')
-);
-const resolvedStoragePath = path.resolve(storagePath);
-
-if (!fs.existsSync(storagePath)) {
-  fs.mkdirSync(storagePath, { recursive: true });
-}
+import { supabase } from '../lib/supabase.js';
 
 const isValidUUID = (id) => Boolean(
   id && id.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)
 );
 
-const isPdfByMagicBytes = (filePath) => {
-  const fileDescriptor = fs.openSync(filePath, 'r');
-  try {
-    const buffer = Buffer.alloc(4);
-    fs.readSync(fileDescriptor, buffer, 0, 4, 0);
-    return buffer.toString('utf8') === '%PDF';
-  } finally {
-    fs.closeSync(fileDescriptor);
-  }
+const isPdfByMagicBytes = (buffer) => {
+  if (!buffer || buffer.length < 4) return false;
+  return buffer.toString('utf8', 0, 4) === '%PDF';
 };
 
 const sanitizeDocumentType = (documentType = 'document') => (
@@ -59,12 +41,6 @@ const sanitizeDisplayFileName = (fileName = '') => {
   return cleaned.toLowerCase().endsWith('.pdf') ? cleaned : `${cleaned}.pdf`;
 };
 
-const removeUploadedFile = (filePath) => {
-  if (filePath && fs.existsSync(filePath)) {
-    fs.unlinkSync(filePath);
-  }
-};
-
 export const saveDocument = async (req, res) => {
   let client;
   try {
@@ -76,12 +52,10 @@ export const saveDocument = async (req, res) => {
     }
 
     if (!documentType) {
-      removeUploadedFile(file.path);
       return res.status(400).json({ error: 'documentType is required.' });
     }
 
-    if (!isPdfByMagicBytes(file.path)) {
-      removeUploadedFile(file.path);
+    if (!isPdfByMagicBytes(file.buffer)) {
       return res.status(400).json({ error: 'Arquivo PDF inválido.' });
     }
 
@@ -94,13 +68,6 @@ export const saveDocument = async (req, res) => {
     const targetSubmissionId = isValidUUID(submissionId) && submissionId !== budgetId ? submissionId : null;
     const targetBudgetId = isValidUUID(budgetId) ? budgetId : null;
 
-    if (submissionId && !targetSubmissionId) {
-      console.warn('[DocumentSave] Invalid or ignored submissionId received');
-    }
-    if (budgetId && !targetBudgetId) {
-      console.warn('[DocumentSave] Invalid budgetId received');
-    }
-
     client = await pool.connect();
     await client.query('BEGIN');
 
@@ -109,8 +76,6 @@ export const saveDocument = async (req, res) => {
       if (budgetResult.rows.length === 0) {
         await client.query('ROLLBACK');
         client.release();
-        client = null;
-        removeUploadedFile(file.path);
         return res.status(404).json({ error: 'Budget not found.' });
       }
     }
@@ -120,19 +85,34 @@ export const saveDocument = async (req, res) => {
       if (submissionResult.rows.length === 0) {
         await client.query('ROLLBACK');
         client.release();
-        client = null;
-        removeUploadedFile(file.path);
         return res.status(404).json({ error: 'Submission not found.' });
       }
     }
 
+    // Upload to Supabase Storage
+    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+    const supabaseFileName = `document-${uniqueSuffix}.pdf`;
+
+    const { data: uploadData, error: uploadError } = await supabase
+      .storage
+      .from('documents')
+      .upload(supabaseFileName, file.buffer, {
+        contentType: 'application/pdf',
+        upsert: false
+      });
+
+    if (uploadError) {
+      throw uploadError;
+    }
+
+    // Insert to DB
     const result = await client.query(
       `
         INSERT INTO generated_documents (submission_id, budget_id, document_type, pdf_path, file_name)
         VALUES ($1, $2, $3, $4, $5)
         RETURNING *
       `,
-      [targetSubmissionId, targetBudgetId, documentType, file.filename, file.filename]
+      [targetSubmissionId, targetBudgetId, documentType, supabaseFileName, supabaseFileName]
     );
 
     const savedDocument = result.rows[0];
@@ -148,40 +128,24 @@ export const saveDocument = async (req, res) => {
     );
 
     if (targetBudgetId) {
-      await client.query(
-        'UPDATE budgets SET pdf_document_id = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
-        [savedDocument.id, targetBudgetId]
-      );
+      await client.query('UPDATE budgets SET contract_document_id = $1 WHERE id = $2', [savedDocument.id, targetBudgetId]);
     }
 
     await client.query('COMMIT');
     client.release();
-    client = null;
 
-    console.log('[DocumentSave] Success', {
-      documentId: savedDocument.id,
-      documentType: savedDocument.document_type,
-    });
-    res.status(201).json(updated.rows[0]);
+    res.json(updated.rows[0]);
   } catch (error) {
-    console.error('[DocumentSave] Error:', {
-      message: error.message,
-      code: error.code,
-    });
     if (client) {
-      await client.query('ROLLBACK').catch(() => {});
+      try {
+        await client.query('ROLLBACK');
+        client.release();
+      } catch (rollbackError) {
+        console.error('Error during rollback:', rollbackError);
+      }
     }
-    if (req.file?.path) {
-      removeUploadedFile(req.file.path);
-    }
-    if (client) {
-      client.release();
-      client = null;
-    }
-    const isProduction = process.env.NODE_ENV === 'production';
-    res.status(500).json({
-      error: isProduction ? 'Erro interno ao processar a solicitação.' : 'Failed to save document to database.',
-    });
+    console.error('[DocumentSave] Failed to save document:', error);
+    res.status(500).json({ error: 'Failed to save document to database.' });
   }
 };
 
@@ -208,10 +172,7 @@ export const listDocuments = async (req, res) => {
     const result = await pool.query(sql, values);
     res.json(result.rows);
   } catch (error) {
-    console.error('[Documents] Error listing documents:', {
-      message: error.message,
-      code: error.code,
-    });
+    console.error('[Documents] Error listing documents:', error);
     res.status(500).json({ error: 'Failed to list documents.' });
   }
 };
@@ -226,25 +187,23 @@ export const downloadDocument = async (req, res) => {
     }
 
     const document = result.rows[0];
-    const filePath = path.resolve(resolvedStoragePath, document.pdf_path);
 
-    if (!filePath.startsWith(`${resolvedStoragePath}${path.sep}`)) {
-      return res.status(403).json({ error: 'Invalid document path.' });
+    // Get signed URL for 1 hour to allow safe download
+    const { data, error } = await supabase
+      .storage
+      .from('documents')
+      .createSignedUrl(document.pdf_path, 3600);
+
+    if (error || !data) {
+      console.error('[Documents] Supabase sign url error:', error);
+      return res.status(404).json({ error: 'File not found on storage.' });
     }
 
-    if (!fs.existsSync(filePath)) {
-      return res.status(404).json({ error: 'File not found on server.' });
-    }
+    // Redirect the user to the signed URL so the browser downloads it
+    res.redirect(data.signedUrl);
 
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="${document.file_name || 'document.pdf'}"`);
-    fs.createReadStream(filePath).pipe(res);
   } catch (error) {
-    console.error('[Documents] Error downloading document:', {
-      message: error.message,
-      code: error.code,
-      documentId: req.params.id,
-    });
+    console.error('[Documents] Error downloading document:', error);
     res.status(500).json({ error: 'Erro interno ao processar a solicitação.' });
   }
 };

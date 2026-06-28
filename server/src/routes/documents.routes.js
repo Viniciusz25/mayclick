@@ -1,33 +1,12 @@
 import express from 'express';
 import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
-import crypto from 'crypto';
-import { fileURLToPath } from 'url';
 import { saveDocument, listDocuments, downloadDocument } from '../controllers/documents.controller.js';
 import { authenticateToken } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const documentsDir = path.resolve(
-  process.env.STORAGE_DIR || path.resolve(__dirname, '../../storage/documents')
-);
 
-if (!fs.existsSync(documentsDir)) {
-  fs.mkdirSync(documentsDir, { recursive: true });
-}
-
-// Multer config for disk storage
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, documentsDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = `${Date.now()}-${crypto.randomUUID()}`;
-    cb(null, `document-${uniqueSuffix}.pdf`);
-  }
-});
+// Multer config for memory storage (for Supabase upload)
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage,

@@ -1,27 +1,12 @@
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
-import fs from 'fs';
 import { authenticateToken } from '../middleware/auth.middleware.js';
+import { supabase } from '../lib/supabase.js';
 
 const router = express.Router();
 
-// Ensure uploads directory exists
-const uploadsDir = path.resolve('uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    const ext = path.extname(file.originalname).toLowerCase();
-    cb(null, `img-${uniqueSuffix}${ext}`);
-  },
-});
+const storage = multer.memoryStorage();
 
 const fileFilter = (req, file, cb) => {
   const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
@@ -38,34 +23,66 @@ const upload = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB per file
 });
 
-const buildFileUrl = (filename) => {
-  const port = process.env.PORT || 4001;
-  const host = process.env.HOST || 'localhost';
-  const baseUrl = process.env.NODE_ENV === 'production'
-    ? (process.env.APP_PUBLIC_URL || '')
-    : `http://${host}:${port}`;
-  return `${baseUrl}/uploads/${filename}`;
+const uploadToSupabase = async (file) => {
+  const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+  const ext = path.extname(file.originalname).toLowerCase();
+  const filename = `img-${uniqueSuffix}${ext}`;
+
+  const { data, error } = await supabase
+    .storage
+    .from('media')
+    .upload(filename, file.buffer, {
+      contentType: file.mimetype,
+      upsert: false
+    });
+
+  if (error) {
+    throw error;
+  }
+
+  // Get public URL
+  const { data: publicData } = supabase.storage.from('media').getPublicUrl(filename);
+  
+  return {
+    url: publicData.publicUrl,
+    filename: filename
+  };
 };
 
 // POST /api/admin/upload  (single image)
-router.post('/', authenticateToken, upload.single('image'), (req, res) => {
+router.post('/', authenticateToken, upload.single('image'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'Nenhum arquivo enviado.' });
   }
-  res.json({ url: buildFileUrl(req.file.filename), filename: req.file.filename });
+
+  try {
+    const result = await uploadToSupabase(req.file);
+    res.json({ url: result.url, filename: result.filename });
+  } catch (error) {
+    console.error('Error uploading to Supabase:', error);
+    res.status(500).json({ error: 'Erro ao salvar a imagem na nuvem.' });
+  }
 });
 
 // POST /api/admin/upload/bulk  (up to 50 images at once)
-router.post('/bulk', authenticateToken, upload.array('images', 50), (req, res) => {
+router.post('/bulk', authenticateToken, upload.array('images', 50), async (req, res) => {
   if (!req.files || req.files.length === 0) {
     return res.status(400).json({ error: 'Nenhum arquivo enviado.' });
   }
-  const results = req.files.map((f) => ({
-    url: buildFileUrl(f.filename),
-    filename: f.filename,
-    originalName: f.originalname,
-  }));
-  res.json({ uploaded: results, count: results.length });
+
+  try {
+    const uploadPromises = req.files.map(f => uploadToSupabase(f).then(result => ({
+      url: result.url,
+      filename: result.filename,
+      originalName: f.originalname,
+    })));
+    
+    const results = await Promise.all(uploadPromises);
+    res.json({ uploaded: results, count: results.length });
+  } catch (error) {
+    console.error('Error uploading bulk to Supabase:', error);
+    res.status(500).json({ error: 'Erro ao salvar imagens na nuvem.' });
+  }
 });
 
 export default router;
