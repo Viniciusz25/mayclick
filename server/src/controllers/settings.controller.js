@@ -97,6 +97,11 @@ const firstText = (...values) => {
   return value === undefined ? '' : String(value);
 };
 
+const firstBoolean = (...values) => {
+  const value = values.find((item) => item !== undefined && item !== null);
+  return value === true || value === 'true' || value === 1 || value === '1';
+};
+
 const nullableInt = (value) => {
   const parsed = Number.parseInt(value, 10);
   return Number.isFinite(parsed) ? parsed : null;
