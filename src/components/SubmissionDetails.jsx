@@ -14,6 +14,16 @@ import {
   getBudgets, createBudget, updateBudget, getPackages, deleteAdminSubmission, updateAdminSubmission
 } from '../lib/apiClient';
 
+const formatDateBR = (value, fallback = 'A confirmar') => {
+  if (!value) return fallback;
+  const text = String(value).trim();
+  const isoDateOnly = text.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  const date = isoDateOnly
+    ? new Date(Number(isoDateOnly[1]), Number(isoDateOnly[2]) - 1, Number(isoDateOnly[3]))
+    : new Date(text);
+  return Number.isNaN(date.getTime()) ? fallback : date.toLocaleDateString('pt-BR');
+};
+
 const SubmissionDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -587,7 +597,7 @@ const SubmissionDetails = () => {
                   </div>
                 ) : (
                   <span className="detail-value">
-                    {event.date ? new Date(event.date).toLocaleDateString('pt-BR') : 'A confirmar'} | {event.startTime} às {event.endTime}
+                    {event.date ? formatDateBR(event.date) : 'A confirmar'} | {event.startTime} às {event.endTime}
                   </span>
                 )}
               </div>
