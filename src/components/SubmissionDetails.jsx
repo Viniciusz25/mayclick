@@ -209,15 +209,7 @@ const SubmissionDetails = () => {
           civilStatus: civilStatus || '',
           profession: profession || '',
         },
-        address: {
-          street: contractor.address?.street || '',
-          number: contractor.address?.number || '',
-          complement: contractor.address?.complement || '',
-          neighborhood: contractor.address?.neighborhood || '',
-          city: contractor.address?.city || '',
-          state: contractor.address?.state || '',
-          zip: contractor.address?.zip || '',
-        },
+        address: typeof contractor.address === 'string' ? contractor.address : (contractor.address?.street ? `${contractor.address.street}, ${contractor.address.number || ''} ${contractor.address.complement || ''}` : ''),
         witnesses: {
           name: witnesses.name || '',
           cpf: witnesses.cpf || '',
@@ -240,7 +232,7 @@ const SubmissionDetails = () => {
         contractor_data: { 
           ...contractor, 
           ...editData.contractor,
-          address: { ...(contractor.address || {}), ...editData.address }
+          address: editData.address
         },
         event_data: { ...event, ...editData.event, type: editData.event.type, date: editData.event.date, address: editData.event.address, guestCount: editData.event.guestCount },
         witness_data: { ...witnesses, ...editData.witnesses }
@@ -533,39 +525,17 @@ const SubmissionDetails = () => {
             <h2 className="section-title"><MapPin size={22} className="text-accent" /> Endereço Completo</h2>
             <div className="details-grid">
               <div className="detail-item span-2">
-                <span className="detail-label">Rua / Número / Complemento</span>
+                <span className="detail-label">Endereço Fornecido</span>
                 {isEditing ? (
-                  <div className="flex gap-2">
-                    <input type="text" className="form-control" placeholder="Rua" value={editData.address.street} onChange={(e) => setEditData({...editData, address: {...editData.address, street: e.target.value}})} style={{ flex: 2 }} />
-                    <input type="text" className="form-control" placeholder="Número" value={editData.address.number} onChange={(e) => setEditData({...editData, address: {...editData.address, number: e.target.value}})} style={{ flex: 1 }} />
-                    <input type="text" className="form-control" placeholder="Complemento" value={editData.address.complement} onChange={(e) => setEditData({...editData, address: {...editData.address, complement: e.target.value}})} style={{ flex: 1 }} />
-                  </div>
+                  <textarea 
+                    className="form-control" 
+                    rows={2}
+                    value={editData.address || ''} 
+                    onChange={(e) => setEditData({...editData, address: e.target.value})} 
+                  />
                 ) : (
                   <span className="detail-value">
-                    {contractor.address?.street}, {contractor.address?.number}
-                    {contractor.address?.complement ? ` - ${contractor.address.complement}` : ''}
-                  </span>
-                )}
-              </div>
-              <div className="detail-item">
-                <span className="detail-label">Bairro</span>
-                {isEditing ? (
-                  <input type="text" className="form-control" value={editData.address.neighborhood} onChange={(e) => setEditData({...editData, address: {...editData.address, neighborhood: e.target.value}})} />
-                ) : (
-                  <span className="detail-value">{contractor.address?.neighborhood}</span>
-                )}
-              </div>
-              <div className="detail-item">
-                <span className="detail-label">Cidade / Estado / CEP</span>
-                {isEditing ? (
-                  <div className="flex gap-2">
-                    <input type="text" className="form-control" placeholder="Cidade" value={editData.address.city} onChange={(e) => setEditData({...editData, address: {...editData.address, city: e.target.value}})} />
-                    <input type="text" className="form-control" placeholder="UF" value={editData.address.state} onChange={(e) => setEditData({...editData, address: {...editData.address, state: e.target.value}})} style={{ width: '80px' }} />
-                    <input type="text" className="form-control" placeholder="CEP" value={editData.address.zip} onChange={(e) => setEditData({...editData, address: {...editData.address, zip: e.target.value}})} style={{ width: '120px' }} />
-                  </div>
-                ) : (
-                  <span className="detail-value">
-                    {contractor.address?.city} - {contractor.address?.state} | {contractor.address?.zip}
+                    {typeof contractor.address === 'string' ? contractor.address : (contractor.address?.street ? `${contractor.address.street}, ${contractor.address.number || ''} ${contractor.address.complement || ''} - ${contractor.address.neighborhood || ''} - ${contractor.address.city || ''}/${contractor.address.state || ''}` : 'Não informado')}
                   </span>
                 )}
               </div>

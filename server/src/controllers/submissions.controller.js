@@ -205,18 +205,13 @@ export const createSubmission = async (req, res) => {
   const finalImportantNotes =
     req.body.important_notes || req.body.importantNotes || req.body.observations || '';
 
-  if (!contractorData?.fullName || !eventData?.date || !selectedPackageId) {
+  if (!contractorData?.fullName) {
     return res.status(400).json({
-      error: 'Missing required fields: contractor_data.fullName, event_data.date and selected_package_id are required.',
+      error: 'Missing required fields: contractor_data.fullName is required.',
     });
   }
 
-  const missingWitnessFields = getMissingWitnessFields(witnessData);
-  if (missingWitnessFields.length > 0) {
-    return res.status(400).json({
-      error: `Campos obrigatórios de testemunhas ausentes: ${missingWitnessFields.join(', ')}.`,
-    });
-  }
+  // Validação de testemunhas removida para simplificar formulário
 
   try {
     await ensureSubmissionPersistenceColumns();
