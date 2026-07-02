@@ -41,6 +41,29 @@
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+[data-theme='dark'] {
+  --bg-page: #121212;      /* Cinza Chumbo */
+  --bg-surface: #1E1E1E;
+  --primary: #F9FAFB;      /* Quase branco */
+  --primary-light: #F3F4F6;
+  --accent: #D4AF37;       /* Gold mantém igual */
+  --accent-light: rgba(212, 175, 55, 0.1);
+  --accent-soft: rgba(212, 175, 55, 0.05);
+  --secondary: #9CA3AF;
+  --secondary-light: #374151;
+  
+  --text-main: #E5E7EB;
+  --text-muted: #9CA3AF;
+  --text-soft: #6B7280;
+  
+  --border: #374151;
+  --border-strong: #4B5563;
+  
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.5);
+  --shadow-md: 0 10px 25px -5px rgba(0,0,0,0.6), 0 8px 10px -6px rgba(0,0,0,0.6);
+  --shadow-lg: 0 20px 50px -12px rgba(0,0,0,0.8);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -155,7 +178,7 @@ label {
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.08);
-  background-color: #fff;
+  background-color: var(--bg-surface);
 }
 
 .form-control::placeholder {

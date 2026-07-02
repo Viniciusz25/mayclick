@@ -173,6 +173,7 @@ const SubmissionDetails = () => {
     event.selectedExtras,
     event.selected_extras
   );
+  const importantNotes = firstText(submission.important_notes, submission.importantNotes, submission.observations);
   const extrasTotal = selectedExtras.reduce((acc, extra) => acc + Number(extra.total || 0), 0);
 
   const handleDelete = async () => {
@@ -591,6 +592,10 @@ const SubmissionDetails = () => {
                     <Users size={16} /> {guestCount || 'Não informado'}
                   </span>
                 )}
+              </div>
+              <div className="detail-item" style={{ gridColumn: 'span 2' }}>
+                <span className="detail-label">O que o cliente precisa (Observações)</span>
+                <span className="detail-value" style={{ whiteSpace: 'pre-wrap' }}>{importantNotes || 'Nenhuma observação informada.'}</span>
               </div>
             </div>
           </section>

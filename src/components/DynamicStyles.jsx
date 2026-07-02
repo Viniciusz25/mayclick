@@ -25,11 +25,14 @@ const DynamicStyles = ({ settings }) => {
 
       {/* Inject custom CSS variables */}
       <style>{`
-        :root {
-          ${color_primary ? `--primary: ${color_primary};` : ''}
+        :root, html[data-theme='dark'] {
           ${color_accent ? `--accent: ${color_accent};` : ''}
           ${font_heading ? `--font-heading: '${font_heading}', sans-serif;` : ''}
           ${font_body ? `--font-body: '${font_body}', sans-serif;` : ''}
+        }
+        
+        :root:not([data-theme='dark']) {
+          ${color_primary ? `--primary: ${color_primary};` : ''}
         }
         
         body {

@@ -89,6 +89,22 @@ const PublicFooter = () => {
           border-top: 4px solid var(--accent);
         }
 
+        [data-theme='dark'] .public-footer {
+          background-color: var(--bg-surface);
+          color: var(--text-main);
+          border-top: 1px solid var(--border);
+        }
+
+        [data-theme='dark'] .footer-links a,
+        [data-theme='dark'] .footer-links span,
+        [data-theme='dark'] .footer-bottom p {
+          color: var(--text-muted);
+        }
+
+        [data-theme='dark'] .footer-links a:hover {
+          color: var(--accent);
+        }
+
         .footer-container {
           max-width: 1200px;
           margin: 0 auto;

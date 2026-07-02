@@ -26,10 +26,22 @@ import {
 } from 'lucide-react';
 
 import DynamicStyles from './components/DynamicStyles';
+import { ThemeProvider } from './context/ThemeContext';
 
 const AdminLayout = ({ children, handleLogout }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+
+  useEffect(() => {
+    // Força o tema claro no painel administrativo
+    document.documentElement.setAttribute('data-theme', 'light');
+    
+    // Restaura o tema preferido ao sair do painel (voltar para área pública)
+    return () => {
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    };
+  }, []);
 
   const menuItems = [
     { path: '/app/dashboard', label: 'Painel', icon: <LayoutDashboard size={20} /> },
@@ -426,45 +438,47 @@ function App() {
   };
 
   return (
-    <Router>
-      <DynamicStyles settings={businessSettings} />
-      <ScrollToTop />
-      <ErrorBoundary>
-        <Routes>
-          {/* ROTAS PÚBLICAS */}
-          <Route path="/" element={<Home />} />
-          <Route path="/sobre" element={<AboutPage />} />
-          <Route path="/formulario" element={<PublicForm />} />
-          <Route path="/login" element={!session ? <Login /> : <Navigate to="/app/dashboard" />} />
-          <Route path="/obrigado" element={<SuccessPage />} />
-          <Route path="/portfolio" element={<PortfolioPage />} />
-          <Route path="/portfolio/:slug" element={<CategoryGallery />} />
+    <ThemeProvider>
+      <Router>
+        <DynamicStyles settings={businessSettings} />
+        <ScrollToTop />
+        <ErrorBoundary>
+          <Routes>
+            {/* ROTAS PÚBLICAS */}
+            <Route path="/" element={<Home />} />
+            <Route path="/sobre" element={<AboutPage />} />
+            <Route path="/formulario" element={<PublicForm />} />
+            <Route path="/login" element={!session ? <Login /> : <Navigate to="/app/dashboard" />} />
+            <Route path="/obrigado" element={<SuccessPage />} />
+            <Route path="/portfolio" element={<PortfolioPage />} />
+            <Route path="/portfolio/:slug" element={<CategoryGallery />} />
 
-          {/* ROTAS LEGAIS */}
-          <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
-          <Route path="/termos-de-uso" element={<TermsOfUse />} />
-          <Route path="/politica-de-cookies" element={<CookiePolicy />} />
-          <Route path="/preferencias-de-cookies" element={<CookiePreferencesPage />} />
-          <Route path="/politica-de-pagamento" element={<PaymentPolicy />} />
-          <Route path="/cancelamento-e-reembolso" element={<CancellationPolicy />} />
+            {/* ROTAS LEGAIS */}
+            <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
+            <Route path="/termos-de-uso" element={<TermsOfUse />} />
+            <Route path="/politica-de-cookies" element={<CookiePolicy />} />
+            <Route path="/preferencias-de-cookies" element={<CookiePreferencesPage />} />
+            <Route path="/politica-de-pagamento" element={<PaymentPolicy />} />
+            <Route path="/cancelamento-e-reembolso" element={<CancellationPolicy />} />
 
-          {/* ROTAS PRIVADAS */}
-          <Route path="/app" element={<Navigate to="/app/dashboard" />} />
-          <Route path="/app/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-          <Route path="/app/orcamentos" element={<PrivateRoute><SavedBudgets /></PrivateRoute>} />
-          <Route path="/app/orcamentos/novo" element={<PrivateRoute><ManualBudget /></PrivateRoute>} />
-          <Route path="/app/orcamentos/:id" element={<PrivateRoute><BudgetDetails /></PrivateRoute>} />
-          <Route path="/app/respostas" element={<PrivateRoute><Respostas /></PrivateRoute>} />
-          <Route path="/app/respostas/:id" element={<PrivateRoute><SubmissionDetails /></PrivateRoute>} />
-          <Route path="/app/configuracoes-pagina-inicial" element={<PrivateRoute><HomepageSettings /></PrivateRoute>} />
-          <Route path="/app/configuracoes-negocio" element={<PrivateRoute><BusinessSettings /></PrivateRoute>} />
-          <Route path="/app/configuracoes-conta" element={<PrivateRoute><AccountSettings /></PrivateRoute>} />
+            {/* ROTAS PRIVADAS */}
+            <Route path="/app" element={<Navigate to="/app/dashboard" />} />
+            <Route path="/app/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+            <Route path="/app/orcamentos" element={<PrivateRoute><SavedBudgets /></PrivateRoute>} />
+            <Route path="/app/orcamentos/novo" element={<PrivateRoute><ManualBudget /></PrivateRoute>} />
+            <Route path="/app/orcamentos/:id" element={<PrivateRoute><BudgetDetails /></PrivateRoute>} />
+            <Route path="/app/respostas" element={<PrivateRoute><Respostas /></PrivateRoute>} />
+            <Route path="/app/respostas/:id" element={<PrivateRoute><SubmissionDetails /></PrivateRoute>} />
+            <Route path="/app/configuracoes-pagina-inicial" element={<PrivateRoute><HomepageSettings /></PrivateRoute>} />
+            <Route path="/app/configuracoes-negocio" element={<PrivateRoute><BusinessSettings /></PrivateRoute>} />
+            <Route path="/app/configuracoes-conta" element={<PrivateRoute><AccountSettings /></PrivateRoute>} />
 
-          {/* FALLBACK */}
-          <Route path="*" element={<Navigate to="/" />} />
-        </Routes>
-      </ErrorBoundary>
-    </Router>
+            {/* FALLBACK */}
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </ErrorBoundary>
+      </Router>
+    </ThemeProvider>
   );
 }
 

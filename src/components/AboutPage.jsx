@@ -302,7 +302,7 @@ const AboutPage = () => {
           top: 0; left: -300px;
           width: 300px;
           height: 100vh;
-          background: #fff;
+          background: var(--bg-surface);
           z-index: 1000;
           transition: all 0.3s ease;
           box-shadow: 4px 0 24px rgba(0,0,0,0.1);

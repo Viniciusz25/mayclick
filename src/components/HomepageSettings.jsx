@@ -246,6 +246,44 @@ const HomepageSettings = () => {
     }
   };
 
+  const handleUpdateHighlightOrder = async (id, highlight, newOrder) => {
+    try {
+      const updated = await updateHomeHighlight(id, { ...highlight, sort_order: newOrder });
+      setHighlights(highlights.map(h => h.id === id ? updated : h).sort((a, b) => a.sort_order - b.sort_order));
+    } catch (err) {
+      alert('Erro ao atualizar a ordem do destaque.');
+    }
+  };
+
+  const handleHighlightDragStart = (e, index) => {
+    setDragIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', index);
+  };
+
+  const handleHighlightDrop = async (e, dropIndex) => {
+    e.preventDefault();
+    if (dragIndex === null || dragIndex === dropIndex) {
+      setDragIndex(null);
+      setDragOverIndex(null);
+      return;
+    }
+    const reordered = [...highlights];
+    const [moved] = reordered.splice(dragIndex, 1);
+    reordered.splice(dropIndex, 0, moved);
+    
+    const withOrder = reordered.map((h, i) => ({ ...h, sort_order: i + 1 }));
+    setHighlights(withOrder);
+    setDragIndex(null);
+    setDragOverIndex(null);
+    
+    try {
+      await Promise.all(withOrder.map(h => updateHomeHighlight(h.id, h)));
+    } catch (err) {
+      console.error("Erro ao salvar ordem arrastada:", err);
+    }
+  };
+
   // Bulk upload handlers
   const addFilesToQueue = useCallback((files) => {
     const newItems = Array.from(files).map(f => ({
@@ -364,6 +402,7 @@ const HomepageSettings = () => {
       <div className="settings-tabs">
         <button className={activeTab === 'hero' ? 'active' : ''} onClick={() => setActiveTab('hero')}><Layout size={18} /> Hero & Quem Somos</button>
         <button className={activeTab === 'aboutpage' ? 'active' : ''} onClick={() => setActiveTab('aboutpage')}><FileText size={18} /> Página Sobre</button>
+        <button className={activeTab === 'formpage' ? 'active' : ''} onClick={() => setActiveTab('formpage')}><FileText size={18} /> Página Formulário</button>
         <button className={activeTab === 'highlights' ? 'active' : ''} onClick={() => setActiveTab('highlights')}><Globe size={18} /> Destaques</button>
         <button className={activeTab === 'portfolio' ? 'active' : ''} onClick={() => setActiveTab('portfolio')}><List size={18} /> Categorias Portfólio</button>
         <button className={activeTab === 'photos' ? 'active' : ''} onClick={() => setActiveTab('photos')}><Image size={18} /> Destaques & Fotos</button>
@@ -595,6 +634,30 @@ const HomepageSettings = () => {
           </form>
         )}
 
+        {activeTab === 'formpage' && (
+          <form onSubmit={handleSaveSettings}>
+            <div className="section-title">
+              <h3>Página Exclusiva do Formulário</h3>
+              <p style={{ color: '#78716c', fontSize: '0.9rem', marginTop: '0.5rem' }}>Configure a imagem que aparecerá no lado esquerdo da página de contato/orçamento.</p>
+            </div>
+            
+            <div className="form-grid">
+              <div style={{ gridColumn: 'span 2' }}>
+                <ImageUploader
+                  label="Foto Lateral do Formulário (Recomendado: Vertical/Retrato)"
+                  value={settings.form_page_image_url || ''}
+                  onChange={(url) => setSettings({ ...settings, form_page_image_url: url })}
+                  placeholder="URL ou Upload da Imagem"
+                />
+              </div>
+            </div>
+
+            <button className="btn btn-accent" type="submit" disabled={saving} style={{ marginTop: '2rem' }}>
+              <Save size={18} /> {saving ? 'Salvando...' : 'Salvar Alterações'}
+            </button>
+          </form>
+        )}
+
         {activeTab === 'highlights' && (
           <div>
             <div className="section-title">
@@ -655,9 +718,29 @@ const HomepageSettings = () => {
                 </tr>
               </thead>
               <tbody>
-                {highlights.map(h => (
-                  <tr key={h.id}>
-                    <td>{h.sort_order}</td>
+                {highlights.map((h, index) => (
+                  <tr 
+                    key={h.id}
+                    draggable
+                    onDragStart={(e) => handleHighlightDragStart(e, index)}
+                    onDragOver={(e) => handleDragOver(e, index)}
+                    onDrop={(e) => handleHighlightDrop(e, index)}
+                    onDragEnd={handleDragEnd}
+                    className={dragOverIndex === index ? 'drag-over' : ''}
+                    style={{ cursor: 'move' }}
+                  >
+                    <td style={{ width: '100px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <GripVertical size={16} style={{ color: '#a8a29e' }} />
+                        <input 
+                          type="number" 
+                          value={h.sort_order} 
+                          onChange={(e) => setHighlights(highlights.map(item => item.id === h.id ? { ...item, sort_order: parseInt(e.target.value) || 0 } : item))}
+                          onBlur={(e) => handleUpdateHighlightOrder(h.id, h, parseInt(e.target.value))}
+                          style={{ width: '60px', padding: '0.25rem' }}
+                        />
+                      </div>
+                    </td>
                     <td>
                       {h.image_url && <img src={h.image_url} alt={h.title} style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px' }} />}
                     </td>

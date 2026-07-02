@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Camera, ClipboardList, LogIn, ChevronRight, ChevronLeft, Menu, X } from 'lucide-react';
+import { Camera, ClipboardList, LogIn, ChevronRight, ChevronLeft, Menu, X, Sun, Moon } from 'lucide-react';
 import useSettings from '../hooks/useSettings';
 import PublicFooter from './PublicFooter';
 import CookieBanner from './CookieBanner';
@@ -9,8 +9,11 @@ import { useVisualEditor, VisualEditorProvider } from '../context/VisualEditorCo
 import VisualBuilderHeader from './visual-builder/VisualBuilderHeader';
 import VisualBuilderSidebar from './visual-builder/VisualBuilderSidebar';
 import EditableWrapper from './visual-builder/EditableWrapper';
+import { useTheme } from '../context/ThemeContext';
+
 const Home = () => {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { businessSettings } = useSettings();
   const [homeData, setHomeData] = useState(null);
@@ -176,11 +179,11 @@ const Home = () => {
               </h1>
 
               <div className="hero-actions">
-                <button className="btn btn-accent btn-lg" onClick={() => navigate(s.hero_btn_link || '/formulario')}>
-                  <ClipboardList size={22} /> {s.hero_btn_text || "Solicitar Orçamento"}
+                <button className="btn btn-accent" onClick={() => navigate(s.hero_btn_link || '/formulario')}>
+                  <ClipboardList size={18} /> {s.hero_btn_text || "Solicitar Orçamento"}
                 </button>
-                <button className="btn btn-outline-white btn-lg btn-portfolio" onClick={() => navigate('/portfolio')} style={{ marginLeft: '1rem' }}>
-                  <Camera size={22} /> Ver Portfólio
+                <button className="btn btn-outline-white btn-portfolio" onClick={() => navigate('/portfolio')} style={{ marginLeft: '1rem' }}>
+                  <Camera size={18} /> Ver Portfólio
                 </button>
               </div>
             </div>
@@ -249,7 +252,7 @@ const Home = () => {
         const isImageLeft = index % 2 === 0;
         
         return (
-          <section key={h.id} className="destaque-debutantes" style={{ backgroundColor: isImageLeft ? '#fff' : 'var(--bg-page)' }}>
+          <section key={h.id} className="destaque-debutantes" style={{ backgroundColor: isImageLeft ? 'var(--bg-surface)' : 'var(--bg-page)' }}>
             <div className={`container destaque-inner ${!isImageLeft ? 'reverse' : ''}`}>
               <div className="destaque-image-wrapper">
                 <EditableWrapper field="image_url" label="Imagem do Destaque" type="image" section="highlights" highlightId={h.id}>
@@ -505,26 +508,41 @@ const Home = () => {
           </div>
           <button onClick={() => navigate('/sobre')} className="drawer-link">Quem Somos</button>
           <button onClick={() => navigate('/formulario')} className="drawer-link">Contato</button>
+          <button onClick={toggleTheme} className="drawer-link" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            Tema {theme === 'dark' ? 'Claro' : 'Escuro'}
+          </button>
         </nav>
       </aside>
 
-      {/* Header */}
       <header className="main-header">
         <div className="container header-inner">
           <div className="header-left">
-            <button className="menu-toggle-btn" onClick={() => setIsSidebarOpen(true)}>
-              <Menu size={24} />
-            </button>
             <div className="brand" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
               <img src="/logo.jpg" alt="Logo" className="brand-logo" onError={(e) => { e.target.style.display = 'none'; }} />
               <div className="brand-text">
-                <span className="brand-name">{businessSettings?.name || s.company_name || 'Mayclick Photography'}</span>
-                <span className="brand-sub">Fotografia e filmagem para eventos sociais</span>
+                <span className="brand-name header-text-shadow">{businessSettings?.name || s.company_name || 'Mayclick Photography'}</span>
+                <span className="brand-sub header-text-shadow">Fotografia e filmagem para eventos sociais</span>
               </div>
             </div>
           </div>
+
+          <div className="header-right desktop-nav">
+            <button onClick={toggleTheme} className="nav-link" aria-label="Alternar Tema" style={{ padding: '0.5rem', display: 'flex' }}>
+              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+            <button onClick={() => navigate('/')} className="nav-link">Início</button>
+            <button onClick={() => navigate('/portfolio')} className="nav-link">Portfólio</button>
+            <button onClick={() => navigate('/sobre')} className="nav-link">Quem Somos</button>
+            <button onClick={() => navigate('/formulario')} className="nav-link btn-nav-cta">Orçamento</button>
+          </div>
+
+          <button className="menu-toggle-btn mobile-nav-btn" onClick={() => setIsSidebarOpen(true)}>
+            <Menu size={24} />
+          </button>
         </div>
       </header>
+
 
       {currentLayout.map(sectionId => layoutMap[sectionId]())}
 
@@ -539,7 +557,7 @@ const Home = () => {
         }
 
         .credibility-block {
-          background-color: #fff;
+          background-color: var(--bg-surface);
           padding: 3rem 0;
           border-top: 1px solid var(--border);
           border-bottom: 1px solid var(--border);
@@ -600,12 +618,18 @@ const Home = () => {
         }
 
         .main-header {
-          background-color: rgba(250, 249, 246, 0.85);
-          backdrop-filter: blur(12px);
-          border-bottom: 1px solid var(--border);
-          position: sticky;
+          background-color: transparent;
+          border-bottom: none;
+          position: absolute;
           top: 0;
+          left: 0;
+          width: 100%;
           z-index: 100;
+        }
+
+        .header-text-shadow {
+          color: #fff !important;
+          text-shadow: 0 1px 4px rgba(0,0,0,0.6);
         }
 
         .header-left {
@@ -614,23 +638,65 @@ const Home = () => {
           gap: 1.5rem;
         }
 
+        .desktop-nav {
+          display: none;
+          align-items: center;
+          gap: 1.5rem;
+        }
+
+        .nav-link {
+          background: none;
+          border: none;
+          color: #fff;
+          font-family: 'Outfit', sans-serif;
+          font-size: 1rem;
+          font-weight: 600;
+          cursor: pointer;
+          transition: var(--transition);
+          text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+        }
+
+        .nav-link:hover {
+          color: var(--accent);
+        }
+
+        .btn-nav-cta {
+          border: 1px solid rgba(255,255,255,0.5);
+          padding: 0.5rem 1rem;
+          border-radius: var(--radius-full);
+          backdrop-filter: blur(4px);
+        }
+        
+        .btn-nav-cta:hover {
+          background: rgba(255,255,255,0.1);
+          color: #fff;
+          border-color: #fff;
+        }
+
         .menu-toggle-btn {
           background: none;
           border: none;
           cursor: pointer;
-          color: var(--primary);
+          color: #fff;
           padding: 0.5rem;
           display: flex;
           align-items: center;
           justify-content: center;
           transition: var(--transition);
           border-radius: var(--radius);
+          text-shadow: 0 1px 4px rgba(0,0,0,0.6);
         }
 
         .menu-toggle-btn:hover {
-          background-color: var(--secondary-light);
+          background-color: rgba(255, 255, 255, 0.1);
           color: var(--accent);
         }
+
+        @media (min-width: 992px) {
+          .desktop-nav { display: flex; }
+          .mobile-nav-btn { display: none; }
+        }
+
 
         /* Side Drawer Styles */
         .side-drawer-overlay {
@@ -655,7 +721,7 @@ const Home = () => {
           left: 0;
           bottom: 0;
           width: 320px;
-          background-color: #fff;
+          background-color: var(--bg-surface);
           z-index: 999;
           box-shadow: var(--shadow-lg);
           transform: translateX(-100%);
@@ -815,9 +881,9 @@ const Home = () => {
           position: relative;
           min-height: calc(100vh - 90px);
           display: flex;
-          align-items: center;
+          align-items: flex-end;
           justify-content: center;
-          padding: 4rem 0;
+          padding: 0 0 6rem 0;
           overflow: hidden;
         }
 
@@ -830,17 +896,19 @@ const Home = () => {
         .hero-overlay {
           position: absolute;
           inset: 0;
-          background: rgba(0, 0, 0, 0.45); /* Dark overlay */
+          background: radial-gradient(circle at bottom left, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 40%, transparent 70%);
           z-index: 2;
         }
 
         .hero-inner {
           position: relative;
           z-index: 10;
-          text-align: center;
+          text-align: left;
           display: flex;
           flex-direction: column;
-          align-items: center;
+          align-items: flex-start;
+          width: 100%;
+          padding: 0 5%;
         }
 
         .hero-badge {
@@ -859,30 +927,31 @@ const Home = () => {
         }
 
         .hero-content {
-          max-width: 800px;
-          margin: 0 auto;
+          max-width: 450px;
+          margin: 0;
         }
 
         .hero-content h1 {
-          font-size: 4rem;
-          margin-bottom: 1.5rem;
-          color: #fff;
+          font-size: 2.75rem;
+          margin-bottom: 1rem;
+          color: rgba(255, 255, 255, 0.95);
           line-height: 1.1;
-          text-shadow: 0 4px 12px rgba(0,0,0,0.4);
+          font-weight: 600;
+          text-shadow: 0 4px 12px rgba(0,0,0,0.6);
         }
 
         .hero-content p {
-          font-size: 1.25rem;
-          color: #f5f5f5;
-          margin-bottom: 3rem;
+          font-size: 1.1rem;
+          color: rgba(255, 255, 255, 0.85);
+          margin-bottom: 2rem;
           line-height: 1.6;
-          text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+          text-shadow: 0 2px 8px rgba(0,0,0,0.6);
         }
 
         .hero-actions {
           display: flex;
           gap: 1rem;
-          justify-content: center;
+          justify-content: flex-start;
           flex-wrap: wrap;
         }
 
@@ -1024,7 +1093,7 @@ const Home = () => {
         .main-footer {
           padding: 3rem 0;
           border-top: 1px solid var(--border);
-          background-color: #fff;
+          background-color: var(--bg-surface);
         }
 
         .footer-inner {
@@ -1121,7 +1190,7 @@ const Home = () => {
         /* Destaque Debutantes */
         .destaque-debutantes {
           padding: 6rem 0;
-          background-color: #fff;
+          background-color: var(--bg-surface);
         }
 
         .destaque-inner {
@@ -1239,7 +1308,7 @@ const Home = () => {
         /* Depoimentos */
         .depoimentos-section {
           padding: 6rem 0;
-          background-color: #fff;
+          background-color: var(--bg-surface);
         }
 
         .depoimentos-grid {
@@ -1408,7 +1477,8 @@ const Home = () => {
           }
           .carousel-prev { left: 0.5rem; }
           .carousel-next { right: 0.5rem; }
-          .destaque-inner {
+          .destaque-inner,
+          .destaque-inner.reverse {
             grid-template-columns: 1fr;
             gap: 3rem;
           }
@@ -1445,11 +1515,11 @@ const Home = () => {
         }
 
         @media (max-width: 992px) {
-          .hero-inner { grid-template-columns: 1fr; text-align: center; gap: 4rem; }
-          .hero-content h1 { font-size: 3rem; }
-          .hero-content p { margin: 0 auto 3rem; }
-          .hero-note { margin: 4rem auto 0; text-align: left; }
-          .hero-actions { display: flex; justify-content: center; }
+          .hero-inner { grid-template-columns: 1fr; text-align: left; gap: 4rem; padding: 0 1.5rem; }
+          .hero-content h1 { font-size: 2.25rem; }
+          .hero-content p { margin: 0 0 2rem; font-size: 1rem; }
+          .hero-note { margin: 4rem 0 0; text-align: left; }
+          .hero-actions { display: flex; justify-content: flex-start; }
           .single-hero-img { max-width: 500px; margin: 0 auto; aspect-ratio: 1; }
           .header-inner { height: 80px; }
         }

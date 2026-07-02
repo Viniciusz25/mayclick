@@ -76,6 +76,7 @@ const mapSettings = (settings = {}) => ({
   about_page_gallery_1: settings.about_page_gallery_1 || '',
   about_page_gallery_2: settings.about_page_gallery_2 || '',
   about_page_gallery_3: settings.about_page_gallery_3 || '',
+  form_page_image_url: settings.form_page_image_url || '',
 
   contact: {
     whatsapp: settings.whatsapp || settings.phone || '',
@@ -194,6 +195,8 @@ export const updateSettings = async (req, res) => {
   const about_page_gallery_2 = firstText(payload.about_page_gallery_2);
   const about_page_gallery_3 = firstText(payload.about_page_gallery_3);
 
+  const form_page_image_url = firstText(payload.form_page_image_url);
+
   const homepage_layout = payload.homepage_layout ? JSON.stringify(payload.homepage_layout) : null;
 
   try {
@@ -212,11 +215,12 @@ export const updateSettings = async (req, res) => {
          instagram_username, instagram_active, instagram_widget_code, seo_title, seo_description, seo_keywords, seo_og_image,
          color_primary, color_accent, font_heading, font_body,
          about_page_hero_image, about_page_text, about_page_gallery_1, about_page_gallery_2, about_page_gallery_3,
+         form_page_image_url,
          homepage_layout, portfolio_active, highlights_active, about_active, testimonials_active, cta_active,
          portfolio_eyebrow, portfolio_title, portfolio_description, testimonials_eyebrow, testimonials_title, cta_title, cta_text, cta_button_text,
          instagram_eyebrow, instagram_title, instagram_description)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, COALESCE($9, 5), $10, $11, $12, $13, $14, $15, $16,
-                $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $50, $51, $52, $53, $54, $55, $56, $57, $58, $59, $60, $61, $62, $63, $64, $65, $66)
+                $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $50, $51, $52, $53, $54, $55, $56, $57, $58, $59, $60, $61, $62, $63, $64, $65, $66, $67)
         RETURNING *`,
         [
           company_name,
@@ -268,6 +272,7 @@ export const updateSettings = async (req, res) => {
           about_page_gallery_1,
           about_page_gallery_2,
           about_page_gallery_3,
+          form_page_image_url,
           homepage_layout,
           portfolio_active,
           highlights_active,
@@ -356,8 +361,9 @@ export const updateSettings = async (req, res) => {
         instagram_eyebrow = $64,
         instagram_title = $65,
         instagram_description = $66,
+        form_page_image_url = $67,
         updated_at = CURRENT_TIMESTAMP
-        WHERE id = $67 RETURNING *`,
+        WHERE id = $68 RETURNING *`,
         [
           company_name,
           trade_name,
@@ -425,6 +431,7 @@ export const updateSettings = async (req, res) => {
           instagram_eyebrow,
           instagram_title,
           instagram_description,
+          form_page_image_url,
           check.rows[0].id,
         ]
       );
