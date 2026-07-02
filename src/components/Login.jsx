@@ -1,13 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Camera, LogIn, AlertCircle, ArrowLeft, Lock, Mail } from 'lucide-react';
 import { login } from '../lib/apiClient';
+import { useTheme } from '../context/ThemeContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { setForcedTheme } = useTheme();
+
+  useEffect(() => {
+    // Força o tema claro na página de login
+    setForcedTheme('light');
+    
+    // Restaura o tema ao sair
+    return () => {
+      setForcedTheme(null);
+    };
+  }, [setForcedTheme]);
 
   const handleLogin = async (e) => {
     e.preventDefault();

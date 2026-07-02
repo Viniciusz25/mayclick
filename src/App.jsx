@@ -26,22 +26,22 @@ import {
 } from 'lucide-react';
 
 import DynamicStyles from './components/DynamicStyles';
-import { ThemeProvider } from './context/ThemeContext';
+import { ThemeProvider, useTheme } from './context/ThemeContext';
 
 const AdminLayout = ({ children, handleLogout }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { setForcedTheme } = useTheme();
 
   useEffect(() => {
-    // Força o tema claro no painel administrativo
-    document.documentElement.setAttribute('data-theme', 'light');
+    // Força o tema claro no painel administrativo de forma segura
+    setForcedTheme('light');
     
-    // Restaura o tema preferido ao sair do painel (voltar para área pública)
+    // Restaura o tema preferido ao sair do painel
     return () => {
-      const savedTheme = localStorage.getItem('theme') || 'dark';
-      document.documentElement.setAttribute('data-theme', savedTheme);
+      setForcedTheme(null);
     };
-  }, []);
+  }, [setForcedTheme]);
 
   const menuItems = [
     { path: '/app/dashboard', label: 'Painel', icon: <LayoutDashboard size={20} /> },

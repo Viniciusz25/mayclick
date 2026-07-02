@@ -7,18 +7,21 @@ export const ThemeProvider = ({ children }) => {
     const saved = localStorage.getItem('theme');
     return saved || 'dark';
   });
+  const [forcedTheme, setForcedTheme] = useState(null);
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+    document.documentElement.setAttribute('data-theme', forcedTheme || theme);
+    if (!forcedTheme) {
+      localStorage.setItem('theme', theme);
+    }
+  }, [theme, forcedTheme]);
 
   const toggleTheme = () => {
     setTheme(prev => prev === 'light' ? 'dark' : 'light');
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, setForcedTheme }}>
       {children}
     </ThemeContext.Provider>
   );
