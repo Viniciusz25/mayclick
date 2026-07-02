@@ -153,7 +153,7 @@ const PublicForm = () => {
                       <input
                         required
                         className="form-control"
-                        placeholder="Ex: Mogi das Cruzes, SP"
+                        placeholder="Ex: São Paulo, SP"
                         value={formData.event.location}
                         onChange={(e) => handleChange('event', 'location', e.target.value)}
                       />
