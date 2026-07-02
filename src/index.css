@@ -291,3 +291,20 @@ label {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-soft);
 }
+
+/* Details Grid Layout for Cards */
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.detail-item.span-2, .detail-item[style*="span 2"] {
+  grid-column: 1 / -1;
+}

@@ -207,6 +207,8 @@ const SubmissionDetails = () => {
           email: contractor.email || '',
           phone1: contractor.phone1 || contractor.phone || '',
           cpf: contractor.cpf || '',
+          rg: contractor.rg || '',
+          birthDate: contractor.birthDate || '',
           civilStatus: civilStatus || '',
           profession: profession || '',
         },
@@ -218,9 +220,12 @@ const SubmissionDetails = () => {
         event: {
           type: eventType || '',
           date: event.date || '',
+          startTime: event.startTime || '',
           address: eventAddress || '',
           guestCount: guestCount || '',
-        }
+          celebrantsName: event.celebrantsName || '',
+        },
+        importantNotes: importantNotes || '',
       });
       setIsEditing(true);
     }
@@ -236,7 +241,8 @@ const SubmissionDetails = () => {
           address: editData.address
         },
         event_data: { ...event, ...editData.event, type: editData.event.type, date: editData.event.date, address: editData.event.address, guestCount: editData.event.guestCount },
-        witness_data: { ...witnesses, ...editData.witnesses }
+        witness_data: { ...witnesses, ...editData.witnesses },
+        important_notes: editData.importantNotes
       };
       
       const updatedSubmission = await updateAdminSubmission(id, payload);
@@ -446,7 +452,7 @@ const SubmissionDetails = () => {
                 <span className="detail-label">Documentos</span>
                 {isEditing ? (
                   <div className="flex gap-2">
-                    <input type="text" className="form-control" placeholder="RG" value={contractor.rg || ''} disabled title="RG não editável por aqui ainda" />
+                    <input type="text" className="form-control" placeholder="RG" value={editData.contractor.rg || ''} onChange={(e) => setEditData({...editData, contractor: {...editData.contractor, rg: e.target.value}})} />
                     <input type="text" className="form-control" placeholder="CPF" value={editData.contractor.cpf} onChange={(e) => setEditData({...editData, contractor: {...editData.contractor, cpf: e.target.value}})} />
                   </div>
                 ) : (
@@ -457,7 +463,7 @@ const SubmissionDetails = () => {
                 <span className="detail-label">Nascimento / Estado Civil</span>
                 {isEditing ? (
                   <div className="flex gap-2">
-                    <input type="date" className="form-control" value={contractor.birthDate ? new Date(contractor.birthDate).toISOString().split('T')[0] : ''} disabled title="Data não editável por aqui ainda" />
+                    <input type="date" className="form-control" value={editData.contractor.birthDate && !isNaN(new Date(editData.contractor.birthDate)) ? new Date(editData.contractor.birthDate).toISOString().split('T')[0] : ''} onChange={(e) => setEditData({...editData, contractor: {...editData.contractor, birthDate: e.target.value}})} />
                     <input type="text" className="form-control" placeholder="Estado Civil" value={editData.contractor.civilStatus} onChange={(e) => setEditData({...editData, contractor: {...editData.contractor, civilStatus: e.target.value}})} />
                   </div>
                 ) : (
@@ -557,14 +563,18 @@ const SubmissionDetails = () => {
               </div>
               <div className="detail-item">
                 <span className="detail-label">Aniversariante / Casal / Debutante</span>
-                <span className="detail-value">{event.celebrantsName}</span>
+                {isEditing ? (
+                  <input type="text" className="form-control" value={editData.event.celebrantsName || ''} onChange={(e) => setEditData({...editData, event: {...editData.event, celebrantsName: e.target.value}})} />
+                ) : (
+                  <span className="detail-value">{event.celebrantsName}</span>
+                )}
               </div>
               <div className="detail-item">
                 <span className="detail-label">Data / Horário</span>
                 {isEditing ? (
                   <div className="flex gap-2">
-                    <input type="date" className="form-control" value={editData.event.date ? new Date(editData.event.date).toISOString().split('T')[0] : ''} onChange={(e) => setEditData({...editData, event: {...editData.event, date: e.target.value}})} />
-                    <input type="time" className="form-control" value={event.startTime || ''} disabled title="Hora ainda não editável por aqui" />
+                    <input type="date" className="form-control" value={editData.event.date && !isNaN(new Date(editData.event.date)) ? new Date(editData.event.date).toISOString().split('T')[0] : ''} onChange={(e) => setEditData({...editData, event: {...editData.event, date: e.target.value}})} />
+                    <input type="time" className="form-control" value={editData.event.startTime || ''} onChange={(e) => setEditData({...editData, event: {...editData.event, startTime: e.target.value}})} />
                   </div>
                 ) : (
                   <span className="detail-value">
@@ -595,7 +605,11 @@ const SubmissionDetails = () => {
               </div>
               <div className="detail-item" style={{ gridColumn: 'span 2' }}>
                 <span className="detail-label">O que o cliente precisa (Observações)</span>
-                <span className="detail-value" style={{ whiteSpace: 'pre-wrap' }}>{importantNotes || 'Nenhuma observação informada.'}</span>
+                {isEditing ? (
+                  <textarea className="form-control" rows={3} value={editData.importantNotes || ''} onChange={(e) => setEditData({...editData, importantNotes: e.target.value})} />
+                ) : (
+                  <span className="detail-value" style={{ whiteSpace: 'pre-wrap' }}>{importantNotes || 'Nenhuma observação informada.'}</span>
+                )}
               </div>
             </div>
           </section>
