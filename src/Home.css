@@ -284,6 +284,48 @@
   padding: 6rem 0;
   position: relative;
 }
+
+.top-promo-banner {
+  position: relative;
+  background-color: #fdfdfd;
+  color: #111;
+  text-align: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  z-index: 9999;
+  border-bottom: 1px solid #eee;
+  flex-wrap: wrap;
+}
+.top-promo-banner .promo-text {
+  font-family: 'Inter', sans-serif;
+}
+.top-promo-banner strong {
+  font-weight: 800;
+}
+.btn-promo-action {
+  background-color: #dcb360; /* Gold */
+  color: #111;
+  border: none;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+}
+.btn-promo-action:hover {
+  background-color: #c5a059;
+  transform: translateY(-1px);
+}
+
 .luxury-about-container {
   display: flex;
   align-items: center;

@@ -9,6 +9,7 @@ import { useVisualEditor, VisualEditorProvider } from '../context/VisualEditorCo
 import VisualBuilderHeader from './visual-builder/VisualBuilderHeader';
 import VisualBuilderSidebar from './visual-builder/VisualBuilderSidebar';
 import EditableWrapper from './visual-builder/EditableWrapper';
+import TopBanner from './TopBanner';
 import '../Home.css';
 
 const Home = () => {
@@ -66,26 +67,28 @@ const Home = () => {
       {isEditMode && <VisualBuilderHeader />}
       {isEditMode && <VisualBuilderSidebar />}
       
-      <header className="luxury-header">
-        <div className="luxury-logo">
-          <img src={businessSettings?.logo_url || "/logo.jpg"} alt="MayClick Photography" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
-          <span>MayClick</span>
-        </div>
-        <nav className="luxury-nav">
-          <Link to="/" className="active">INÍCIO</Link>
-          <a href="#sobre">SOBRE</a>
-          <a href="#servicos">SERVIÇOS</a>
-          <Link to="/portfolio">PORTFÓLIO</Link>
-          <Link to="/depoimentos">DEPOIMENTOS</Link>
-          <Link to="/blog">BLOG</Link>
-          <a href="#contato">CONTATO</a>
-        </nav>
-        <button className="btn-outline-gold" onClick={() => navigate('/formulario')}>Orçamento</button>
-      </header>
-
+      <TopBanner />
+      
       <main>
         {/* HERO */}
         <section className="luxury-hero">
+          <header className="luxury-header">
+            <div className="luxury-logo">
+              <img src={businessSettings?.logo_url || "/logo.jpg"} alt="MayClick Photography" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
+              <span>MayClick</span>
+            </div>
+            <nav className="luxury-nav">
+              <Link to="/" className="active">INÍCIO</Link>
+              <a href="#sobre">SOBRE</a>
+              <a href="#servicos">SERVIÇOS</a>
+              <Link to="/portfolio">PORTFÓLIO</Link>
+              <Link to="/depoimentos">DEPOIMENTOS</Link>
+              <Link to="/blog">BLOG</Link>
+              <a href="#contato">CONTATO</a>
+            </nav>
+            <button className="btn-outline-gold" onClick={() => navigate('/formulario')}>Orçamento</button>
+          </header>
+
           <div className="luxury-hero-bg" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
             {carouselPhotos.length > 0 ? (
               carouselPhotos.map((photo, index) => (

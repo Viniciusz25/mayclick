@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import useSettings from '../hooks/useSettings';
+import TopBanner from './TopBanner';
 import '../Home.css';
 
 const PublicHeader = () => {
@@ -8,7 +9,9 @@ const PublicHeader = () => {
   const { businessSettings } = useSettings();
 
   return (
-    <header className="luxury-header" style={{ position: 'relative', background: '#050505', borderBottom: '1px solid #222' }}>
+    <>
+      <TopBanner />
+      <header className="luxury-header" style={{ position: 'relative', background: '#050505', borderBottom: '1px solid #222' }}>
       <div className="luxury-logo">
         {businessSettings?.logo_url ? (
           <img src={businessSettings.logo_url} alt="MayClick Photography" style={{height: '40px'}} />
@@ -25,6 +28,7 @@ const PublicHeader = () => {
       </nav>
       <button className="btn-outline-gold" onClick={() => navigate('/formulario')}>Orçamento</button>
     </header>
+    </>
   );
 };
 

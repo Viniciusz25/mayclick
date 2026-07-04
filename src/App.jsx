@@ -20,6 +20,7 @@ import AboutPage from './components/AboutPage';
 import BlogPage from './components/BlogPage';
 import BlogPost from './components/BlogPost';
 import AdminBlog from './components/AdminBlog';
+import CadastroForm from './components/CadastroForm';
 import ScrollToTop from './components/ScrollToTop';
 import useSettings from './hooks/useSettings';
 import {
@@ -452,6 +453,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/sobre" element={<AboutPage />} />
             <Route path="/formulario" element={<PublicForm />} />
+            <Route path="/cadastro" element={<CadastroForm />} />
             <Route path="/login" element={!session ? <Login /> : <Navigate to="/app/dashboard" />} />
             <Route path="/obrigado" element={<SuccessPage />} />
             <Route path="/portfolio" element={<PortfolioPage />} />
