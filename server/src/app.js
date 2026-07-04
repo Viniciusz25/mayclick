@@ -16,6 +16,7 @@ import documentsRoutes from './routes/documents.routes.js';
 import budgetsRoutes from './routes/budgets.routes.js';
 import homepageRoutes from './routes/homepage.routes.js';
 import uploadRoutes from './routes/upload.routes.js';
+import blogRoutes from './routes/blog.routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -95,6 +96,7 @@ app.use('/uploads', express.static(path.resolve('uploads')));
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/public', publicRoutes);
+app.use('/api/blog', blogRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/admin/settings', settingsRoutes);
 app.use('/api/admin/packages', packagesRoutes);

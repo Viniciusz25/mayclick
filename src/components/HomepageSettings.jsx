@@ -35,6 +35,8 @@ const HomepageSettings = () => {
   // Categories
   const [categories, setCategories] = useState([]);
   const [newCategory, setNewCategory] = useState({ slug: '', title: '', description: '', cover_image_url: '', active: true });
+  const [editingCategoryId, setEditingCategoryId] = useState(null);
+  const [editingCategoryData, setEditingCategoryData] = useState(null);
 
   // Drag-and-drop reorder state
   const [dragIndex, setDragIndex] = useState(null);
@@ -140,6 +142,19 @@ const HomepageSettings = () => {
       setCategories(categories.filter(c => c.id !== id));
     } catch (err) {
       alert('Erro ao excluir categoria.');
+    }
+  };
+
+  const handleUpdateCategorySubmit = async (e) => {
+    e.preventDefault();
+    if (!editingCategoryId || !editingCategoryData) return;
+    try {
+      const updated = await updatePortfolioCategory(editingCategoryId, editingCategoryData);
+      setCategories(categories.map(c => c.id === editingCategoryId ? updated : c));
+      setEditingCategoryId(null);
+      setEditingCategoryData(null);
+    } catch (err) {
+      alert('Erro ao atualizar categoria.');
     }
   };
 
@@ -433,17 +448,27 @@ const HomepageSettings = () => {
                   type="text" 
                   value={settings.hero_title || ''} 
                   onChange={(e) => setSettings({ ...settings, hero_title: e.target.value })} 
-                  placeholder="Eternizando seus momentos mais especiais."
+                  placeholder="em memórias eternas."
                 />
               </label>
               
               <label className="wide">
-                Subtítulo / Apresentação
-                <textarea 
-                  rows="3"
+                Subtítulo / Apresentação (Eyebrow)
+                <input 
+                  type="text" 
                   value={settings.hero_subtitle || ''} 
                   onChange={(e) => setSettings({ ...settings, hero_subtitle: e.target.value })} 
-                  placeholder="Fotografia e filmagem para eventos sociais..."
+                  placeholder="Transformamos momentos"
+                />
+              </label>
+
+              <label className="wide">
+                Descrição do Banner
+                <textarea 
+                  rows="3"
+                  value={settings.hero_desc || ''} 
+                  onChange={(e) => setSettings({ ...settings, hero_desc: e.target.value })} 
+                  placeholder="Fotografia e filmagem com alma..."
                 />
               </label>
               
@@ -453,7 +478,7 @@ const HomepageSettings = () => {
                   type="text" 
                   value={settings.hero_btn_text || ''} 
                   onChange={(e) => setSettings({ ...settings, hero_btn_text: e.target.value })} 
-                  placeholder="Solicitar Orçamento"
+                  placeholder="Quero meu orçamento"
                 />
               </label>
 
@@ -469,48 +494,37 @@ const HomepageSettings = () => {
 
               <div style={{ gridColumn: 'span 2' }}>
                 <ImageUploader
-                  label="Imagem de Fundo (fallback quando sem carrossel)"
+                  label="Imagem de Fundo Fixa do Banner (Hero)"
                   value={settings.hero_image_url || ''}
                   onChange={(url) => setSettings({ ...settings, hero_image_url: url })}
-                  placeholder="Link ou URL da imagem principal"
+                  placeholder="Usada se não houver carrossel"
                 />
               </div>
 
-              <div style={{ gridColumn: 'span 2' }}>
-                <div className="carousel-cat-selector">
-                  <div className="carousel-cat-header">
-                    <div>
-                      <strong>🎠 Carrossel Hero — Categoria de Fotos</strong>
-                      <p style={{ margin: '0.3rem 0 0', fontSize: '0.85rem', color: '#78716c' }}>
-                        Quando selecionada, as fotos dessa categoria substituem a imagem estática e giram automaticamente no Hero.
-                      </p>
-                    </div>
-                  </div>
+              <div style={{ gridColumn: 'span 2', marginTop: '1rem' }}>
+                <label>
+                  <strong>Carrossel Animado de Fotos (Opcional)</strong>
+                  <p style={{ fontSize: '0.85rem', color: '#78716c', marginBottom: '0.5rem', fontWeight: 'normal' }}>
+                    Selecione uma categoria de portfólio. As fotos dessa categoria passarão automaticamente no fundo do Banner.
+                  </p>
                   <select
                     value={settings.hero_carousel_category_slug || ''}
-                    onChange={(e) => setSettings({ ...settings, hero_carousel_category_slug: e.target.value || null })}
-                    className="carousel-cat-select"
+                    onChange={(e) => setSettings({ ...settings, hero_carousel_category_slug: e.target.value })}
                   >
-                    <option value="">— Sem carrossel (usar imagem estática) —</option>
+                    <option value="">Nenhum (Usar Imagem Fixa acima)</option>
                     {categories.map(c => (
-                      <option key={c.id} value={c.slug}>{c.title} ({c.slug})</option>
+                      <option key={c.id} value={c.slug}>{c.title}</option>
                     ))}
                   </select>
-                  {settings.hero_carousel_category_slug && (
-                    <p className="carousel-cat-hint">
-                      ✅ O Hero vai exibir as fotos da categoria <strong>{settings.hero_carousel_category_slug}</strong>.
-                      Adicione fotos a essa categoria na aba <em>Destaques &amp; Fotos</em>.
-                    </p>
-                  )}
-                </div>
+                </label>
               </div>
             </div>
 
             <hr />
 
             <div className="section-title">
-              <h3>Seção Quem Somos (Parallax/Vídeo)</h3>
-              <p style={{ color: '#78716c', fontSize: '0.9rem', marginTop: '0.5rem' }}>Esta seção agora ocupa toda a largura da tela. Você pode usar uma imagem com efeito parallax ou um vídeo de fundo (MP4).</p>
+              <h3>Seção Quem Somos (Home)</h3>
+              <p style={{ color: '#78716c', fontSize: '0.9rem', marginTop: '0.5rem' }}>Configure o bloco "Por que escolher a MayClick?" que aparece na página inicial.</p>
             </div>
             <div className="form-grid">
               <label className="wide">
@@ -519,51 +533,88 @@ const HomepageSettings = () => {
                   type="text" 
                   value={settings.about_title || ''} 
                   onChange={(e) => setSettings({ ...settings, about_title: e.target.value })} 
-                  placeholder="A Mayclick Photography"
+                  placeholder="Por que escolher a MayClick?"
                 />
               </label>
               <label className="wide">
                 Texto Institucional
                 <textarea 
-                  rows="4"
+                  rows="3"
                   value={settings.institutional_text || ''} 
                   onChange={(e) => setSettings({ ...settings, institutional_text: e.target.value })} 
-                  placeholder="Conte um pouco sobre a história e propósito da empresa..."
+                  placeholder="Mais que fotografias, entregamos experiências..."
                 />
               </label>
+              <label className="wide">
+                Checklist de Vantagens (1 por linha)
+                <textarea 
+                  rows="5"
+                  value={settings.about_bullets || ''} 
+                  onChange={(e) => setSettings({ ...settings, about_bullets: e.target.value })} 
+                  placeholder="Equipe especializada e apaixonada&#10;Equipamentos de alta performance&#10;Edição profissional..."
+                />
+              </label>
+
               <label>
                 Texto do Botão
                 <input 
                   type="text" 
                   value={settings.about_button_text || ''} 
                   onChange={(e) => setSettings({ ...settings, about_button_text: e.target.value })} 
-                  placeholder="Saiba Mais"
+                  placeholder="Conheça nossa história"
                 />
               </label>
-              <label>
-                Link do Botão
-                <input 
-                  type="text" 
-                  value={settings.about_button_link || ''} 
-                  onChange={(e) => setSettings({ ...settings, about_button_link: e.target.value })} 
-                  placeholder="/sobre"
-                />
-              </label>
-              <div>
+              <div style={{ gridColumn: 'span 2' }}>
                 <ImageUploader
-                  label="Imagem de Fundo (Efeito Parallax)"
+                  label="Imagem da Seção"
                   value={settings.about_parallax_image_url || ''}
                   onChange={(url) => setSettings({ ...settings, about_parallax_image_url: url })}
-                  placeholder="Se usar vídeo, esta imagem não aparecerá."
+                  placeholder="URL da imagem com o selo de anos"
                 />
               </div>
+            </div>
+
+            <hr />
+
+            <div className="section-title">
+              <h3>Estatísticas (Números de Rodapé)</h3>
+              <p style={{ color: '#78716c', fontSize: '0.9rem', marginTop: '0.5rem' }}>Altere os números de destaque exibidos no final da página inicial.</p>
+            </div>
+            <div className="form-grid">
               <label>
-                URL do Vídeo de Fundo (.mp4 ou YouTube)
+                Eventos Realizados
                 <input 
                   type="text" 
-                  value={settings.about_video_url || ''} 
-                  onChange={(e) => setSettings({ ...settings, about_video_url: e.target.value })} 
-                  placeholder="Link do YouTube ou arquivo .mp4 direto"
+                  value={settings.stat_events || ''} 
+                  onChange={(e) => setSettings({ ...settings, stat_events: e.target.value })} 
+                  placeholder="Ex: 500+"
+                />
+              </label>
+              <label>
+                Clientes Satisfeitos
+                <input 
+                  type="text" 
+                  value={settings.stat_clients || ''} 
+                  onChange={(e) => setSettings({ ...settings, stat_clients: e.target.value })} 
+                  placeholder="Ex: 98%"
+                />
+              </label>
+              <label>
+                Prêmios Recebidos
+                <input 
+                  type="text" 
+                  value={settings.stat_stories || ''} 
+                  onChange={(e) => setSettings({ ...settings, stat_stories: e.target.value })} 
+                  placeholder="Ex: 15+"
+                />
+              </label>
+              <label>
+                Anos de Experiência
+                <input 
+                  type="text" 
+                  value={settings.stat_experience || ''} 
+                  onChange={(e) => setSettings({ ...settings, stat_experience: e.target.value })} 
+                  placeholder="Ex: 7"
                 />
               </label>
             </div>
@@ -855,59 +906,95 @@ const HomepageSettings = () => {
                     {/* Position number */}
                     <span className="sort-position">{index + 1}</span>
 
-                    {/* Grip handle */}
-                    <span className="sort-handle" title="Arraste para reordenar">
-                      <GripVertical size={20} />
-                    </span>
+                    {editingCategoryId === cat.id ? (
+                      <div style={{ flex: 1, display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                        <input
+                          type="text"
+                          value={editingCategoryData.title}
+                          onChange={(e) => setEditingCategoryData({ ...editingCategoryData, title: e.target.value })}
+                          placeholder="Título"
+                          style={{ flex: 1, padding: '0.5rem' }}
+                        />
+                        <input
+                          type="text"
+                          value={editingCategoryData.slug}
+                          onChange={(e) => setEditingCategoryData({ ...editingCategoryData, slug: e.target.value })}
+                          placeholder="Slug"
+                          style={{ flex: 1, padding: '0.5rem' }}
+                        />
+                        <input
+                          type="text"
+                          value={editingCategoryData.cover_image_url || ''}
+                          onChange={(e) => setEditingCategoryData({ ...editingCategoryData, cover_image_url: e.target.value })}
+                          placeholder="URL da Imagem (Capa)"
+                          style={{ flex: 2, padding: '0.5rem' }}
+                        />
+                        <button type="button" className="btn btn-accent" style={{ padding: '0.5rem' }} onClick={handleUpdateCategorySubmit}>Salvar</button>
+                        <button type="button" className="btn-outline" style={{ padding: '0.5rem' }} onClick={() => setEditingCategoryId(null)}>Cancelar</button>
+                      </div>
+                    ) : (
+                      <>
+                        <span className="sort-handle" title="Arraste para reordenar">
+                          <GripVertical size={20} />
+                        </span>
 
-                    {/* Cover thumb */}
-                    {cat.cover_image_url && (
-                      <img src={cat.cover_image_url} alt={cat.title} className="sort-thumb"
-                        onError={(e) => { e.target.style.display = 'none'; }} />
+                        {cat.cover_image_url && (
+                          <img src={cat.cover_image_url} alt={cat.title} className="sort-thumb"
+                            onError={(e) => { e.target.style.display = 'none'; }} />
+                        )}
+
+                        <div className="sort-info">
+                          <strong>{cat.title}</strong>
+                          <code>/portfolio/{cat.slug}</code>
+                        </div>
+
+                        <span className={`sort-badge ${cat.active ? 'active' : 'inactive'}`}>
+                          {cat.active ? 'Ativo' : 'Inativo'}
+                        </span>
+
+                        <div className="sort-arrows">
+                          <button
+                            type="button"
+                            className="arrow-btn"
+                            onClick={() => {
+                              setEditingCategoryId(cat.id);
+                              setEditingCategoryData({ ...cat });
+                            }}
+                            title="Editar Categoria"
+                            style={{ width: 'auto', padding: '0.2rem 0.5rem', fontSize: '0.8rem' }}
+                          >
+                            Editar
+                          </button>
+                          <button
+                            type="button"
+                            className="arrow-btn"
+                            onClick={() => moveCategory(index, -1)}
+                            disabled={index === 0}
+                            title="Mover para cima"
+                          >
+                            <ChevronUp size={16} />
+                          </button>
+                          <button
+                            type="button"
+                            className="arrow-btn"
+                            onClick={() => moveCategory(index, 1)}
+                            disabled={index === categories.length - 1}
+                            title="Mover para baixo"
+                          >
+                            <ChevronDown size={16} />
+                          </button>
+                        </div>
+
+                        <button
+                          type="button"
+                          className="icon-button danger"
+                          onClick={() => handleDeleteCategory(cat.id)}
+                          title="Excluir categoria"
+                        >
+                          <Trash size={16} />
+                        </button>
+                      </>
                     )}
-
-                    {/* Info */}
-                    <div className="sort-info">
-                      <strong>{cat.title}</strong>
-                      <code>/portfolio/{cat.slug}</code>
-                    </div>
-
-                    {/* Active badge */}
-                    <span className={`sort-badge ${cat.active ? 'active' : 'inactive'}`}>
-                      {cat.active ? 'Ativo' : 'Inativo'}
-                    </span>
-
-                    {/* Arrow buttons fallback */}
-                    <div className="sort-arrows">
-                      <button
-                        type="button"
-                        className="arrow-btn"
-                        onClick={() => moveCategory(index, -1)}
-                        disabled={index === 0}
-                        title="Mover para cima"
-                      >
-                        <ChevronUp size={16} />
-                      </button>
-                      <button
-                        type="button"
-                        className="arrow-btn"
-                        onClick={() => moveCategory(index, 1)}
-                        disabled={index === categories.length - 1}
-                        title="Mover para baixo"
-                      >
-                        <ChevronDown size={16} />
-                      </button>
-                    </div>
-
-                    {/* Delete */}
-                    <button
-                      type="button"
-                      className="icon-button danger"
-                      onClick={() => handleDeleteCategory(cat.id)}
-                      title="Excluir categoria"
-                    >
-                      <Trash size={16} />
-                    </button>
                   </div>
                 ))}
 
@@ -1090,39 +1177,39 @@ const HomepageSettings = () => {
               </div>
               <div className="form-grid">
                 <label>
-                  Histórias Eternizadas
+                  Eventos Realizados (Ex: 500+)
                   <input 
                     type="text" 
-                    value={settings.stat_stories || ''} 
-                    onChange={(e) => setSettings({ ...settings, stat_stories: e.target.value })} 
-                    placeholder="+3.000"
+                    value={settings.stats_events || ''} 
+                    onChange={(e) => setSettings({ ...settings, stats_events: e.target.value })} 
+                    placeholder="500+"
                   />
                 </label>
                 <label>
-                  Eventos Realizados
+                  Clientes Satisfeitos (Ex: 98%)
                   <input 
                     type="text" 
-                    value={settings.stat_events || ''} 
-                    onChange={(e) => setSettings({ ...settings, stat_events: e.target.value })} 
-                    placeholder="+500"
+                    value={settings.stats_clients || ''} 
+                    onChange={(e) => setSettings({ ...settings, stats_clients: e.target.value })} 
+                    placeholder="98%"
                   />
                 </label>
                 <label>
-                  Clientes Satisfeitos
+                  Anos de Experiência (Ex: 7 ANOS)
                   <input 
                     type="text" 
-                    value={settings.stat_clients || ''} 
-                    onChange={(e) => setSettings({ ...settings, stat_clients: e.target.value })} 
-                    placeholder="Clientes Satisfeitos"
+                    value={settings.stats_experience || ''} 
+                    onChange={(e) => setSettings({ ...settings, stats_experience: e.target.value })} 
+                    placeholder="7 ANOS"
                   />
                 </label>
                 <label>
-                  Experiência profissional
+                  Localização (Ex: SÃO PAULO)
                   <input 
                     type="text" 
-                    value={settings.stat_experience || ''} 
-                    onChange={(e) => setSettings({ ...settings, stat_experience: e.target.value })} 
-                    placeholder="Fotografia e Filmagem Profissional"
+                    value={settings.stats_location || ''} 
+                    onChange={(e) => setSettings({ ...settings, stats_location: e.target.value })} 
+                    placeholder="SÃO PAULO"
                   />
                 </label>
               </div>

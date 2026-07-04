@@ -2,19 +2,20 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Camera, Phone, MapPin, Mail, ShieldCheck } from 'lucide-react';
 import useSettings from '../hooks/useSettings';
+import '../Home.css';
 
 const PublicFooter = () => {
   const { businessSettings } = useSettings();
   const businessName = businessSettings?.name || 'Mayclick Photography';
 
   return (
-    <footer className="public-footer">
+    <footer id="contato" className="public-footer">
       <div className="footer-container">
         <div className="footer-grid">
           {/* BRAND */}
           <div className="footer-brand">
             <img src="/logo.jpg" alt={`${businessName} Logo`} className="footer-logo" />
-            <h3>{businessName}</h3>
+            <h3 className="serif-title">{businessName}</h3>
             <p className="tagline">"Nos permita registrar sua história!"</p>
           </div>
 
@@ -25,6 +26,8 @@ const PublicFooter = () => {
               <li><Link to="/">Início</Link></li>
               <li><Link to="/sobre">Quem Somos</Link></li>
               <li><Link to="/formulario">Orçamentos</Link></li>
+              <li><Link to="/portfolio">Portfólio</Link></li>
+              <li><Link to="/blog">Blog</Link></li>
             </ul>
           </div>
 
@@ -82,27 +85,12 @@ const PublicFooter = () => {
 
       <style>{`
         .public-footer {
-          background-color: var(--primary);
+          background-color: var(--dark-bg, #050505);
           color: #fff;
           padding: 4rem 0 2rem 0;
-          margin-top: 4rem;
-          border-top: 4px solid var(--accent);
-        }
-
-        [data-theme='dark'] .public-footer {
-          background-color: var(--bg-surface);
-          color: var(--text-main);
-          border-top: 1px solid var(--border);
-        }
-
-        [data-theme='dark'] .footer-links a,
-        [data-theme='dark'] .footer-links span,
-        [data-theme='dark'] .footer-bottom p {
-          color: var(--text-muted);
-        }
-
-        [data-theme='dark'] .footer-links a:hover {
-          color: var(--accent);
+          margin-top: 0;
+          border-top: 1px solid #222;
+          font-family: 'Inter', sans-serif;
         }
 
         .footer-container {
@@ -113,102 +101,117 @@ const PublicFooter = () => {
 
         .footer-grid {
           display: grid;
-          grid-template-columns: 1.5fr 1fr 1fr 1fr;
-          gap: 3rem;
+          grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
+          gap: 2rem;
           margin-bottom: 3rem;
         }
 
+        .footer-brand {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
         .footer-logo {
-          width: 60px;
           height: 60px;
-          border-radius: 50%;
-          border: 2px solid var(--accent);
-          margin-bottom: 1rem;
+          border-radius: 8px;
+          margin-bottom: 1.5rem;
         }
 
         .footer-brand h3 {
-          font-family: 'Outfit', sans-serif;
           font-size: 1.5rem;
           margin-bottom: 0.5rem;
-          color: var(--accent);
+          color: var(--gold, #c5a059);
         }
 
         .tagline {
+          font-size: 0.95rem;
+          color: #a0a0a0;
           font-style: italic;
-          color: rgba(255, 255, 255, 0.6);
-          font-size: 0.875rem;
         }
 
         .footer-section h4 {
-          color: var(--accent);
           font-size: 1rem;
-          text-transform: uppercase;
-          letter-spacing: 0.1em;
           margin-bottom: 1.5rem;
-          font-weight: 800;
+          color: var(--gold, #c5a059);
+          font-family: 'Playfair Display', serif;
+          font-weight: 600;
+          letter-spacing: 0.05em;
         }
 
         .footer-links {
           list-style: none;
           padding: 0;
           margin: 0;
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
         }
 
-        .footer-links li a,
-        .footer-links li span {
-          color: rgba(255, 255, 255, 0.7);
+        .footer-links li {
+          margin-bottom: 0.8rem;
+        }
+
+        .footer-links a,
+        .footer-links span {
+          color: #ccc;
           text-decoration: none;
-          font-size: 0.9375rem;
           display: flex;
           align-items: center;
-          gap: 0.625rem;
-          transition: var(--transition);
+          gap: 0.5rem;
+          font-size: 0.9rem;
+          transition: color 0.2s ease;
         }
 
-        .footer-links li a:hover {
-          color: var(--accent);
-          transform: translateX(4px);
+        .footer-links a:hover {
+          color: var(--gold, #c5a059);
         }
 
         .legal-notice {
-          font-size: 0.75rem !important;
-          color: rgba(255, 255, 255, 0.4) !important;
-          margin-top: 0.5rem;
+          color: #888;
+          font-size: 0.85rem;
         }
 
         .footer-bottom {
-          padding-top: 2rem;
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
           text-align: center;
+          padding-top: 2rem;
+          border-top: 1px solid #222;
+          color: #666;
         }
 
         .footer-bottom p {
-          font-size: 0.8125rem;
-          color: rgba(255, 255, 255, 0.5);
+          font-size: 0.875rem;
           margin-bottom: 0.5rem;
         }
 
         .disclaimer {
-          font-size: 0.7rem !important;
-          opacity: 0.6;
+          font-size: 0.75rem;
+          color: #555;
         }
 
         @media (max-width: 992px) {
           .footer-grid {
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
+            grid-template-columns: repeat(3, 1fr);
+          }
+          .footer-brand {
+            grid-column: span 3;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 2rem;
           }
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 768px) {
+          .footer-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+
+        @media (max-width: 576px) {
           .footer-grid {
             grid-template-columns: 1fr;
+            text-align: center;
           }
-          .public-footer {
-            padding: 3rem 0 1.5rem 0;
+          .footer-links a,
+          .footer-links span {
+            justify-content: center;
           }
         }
       `}</style>

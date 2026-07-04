@@ -17,6 +17,9 @@ import HomepageSettings from './components/HomepageSettings';
 import PortfolioPage from './components/PortfolioPage';
 import CategoryGallery from './components/CategoryGallery';
 import AboutPage from './components/AboutPage';
+import BlogPage from './components/BlogPage';
+import BlogPost from './components/BlogPost';
+import AdminBlog from './components/AdminBlog';
 import ScrollToTop from './components/ScrollToTop';
 import useSettings from './hooks/useSettings';
 import {
@@ -47,6 +50,7 @@ const AdminLayout = ({ children, handleLogout }) => {
     { path: '/app/dashboard', label: 'Painel', icon: <LayoutDashboard size={20} /> },
     { path: '/app/orcamentos', label: 'Orçamentos', icon: <Calculator size={20} /> },
     { path: '/app/respostas', label: 'Respostas', icon: <FileText size={20} /> },
+    { path: '/app/blog', label: 'Blog', icon: <FileText size={20} /> },
     { path: '/app/configuracoes-pagina-inicial', label: 'Página Inicial', icon: <Globe size={20} /> },
     { path: '/app/configuracoes-negocio', label: 'Negócio', icon: <Settings size={20} /> },
     { path: '/app/configuracoes-conta', label: 'Minha Conta', icon: <User size={20} /> },
@@ -452,6 +456,8 @@ function App() {
             <Route path="/obrigado" element={<SuccessPage />} />
             <Route path="/portfolio" element={<PortfolioPage />} />
             <Route path="/portfolio/:slug" element={<CategoryGallery />} />
+            <Route path="/blog" element={<BlogPage />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
 
             {/* ROTAS LEGAIS */}
             <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
@@ -469,6 +475,7 @@ function App() {
             <Route path="/app/orcamentos/:id" element={<PrivateRoute><BudgetDetails /></PrivateRoute>} />
             <Route path="/app/respostas" element={<PrivateRoute><Respostas /></PrivateRoute>} />
             <Route path="/app/respostas/:id" element={<PrivateRoute><SubmissionDetails /></PrivateRoute>} />
+            <Route path="/app/blog" element={<PrivateRoute><AdminBlog /></PrivateRoute>} />
             <Route path="/app/configuracoes-pagina-inicial" element={<PrivateRoute><HomepageSettings /></PrivateRoute>} />
             <Route path="/app/configuracoes-negocio" element={<PrivateRoute><BusinessSettings /></PrivateRoute>} />
             <Route path="/app/configuracoes-conta" element={<PrivateRoute><AccountSettings /></PrivateRoute>} />

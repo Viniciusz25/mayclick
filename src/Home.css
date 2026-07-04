@@ -1,0 +1,687 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
+
+.home-luxury-wrapper {
+  background-color: #050505;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  min-height: 100vh;
+}
+
+/* Serif Typography */
+.home-luxury-wrapper h1,
+.home-luxury-wrapper h2,
+.home-luxury-wrapper h3,
+.home-luxury-wrapper .serif-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 400;
+}
+
+/* Base Colors */
+.home-luxury-wrapper {
+  --gold: #c5a059;
+  --gold-light: #e8d08d;
+  --dark-bg: #050505;
+  --dark-surface: #111111;
+  --gray-text: #a0a0a0;
+}
+
+.text-gold {
+  color: var(--gold);
+}
+
+/* HEADER */
+.luxury-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 4rem;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+}
+.luxury-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+.luxury-logo img {
+  height: 40px;
+}
+.luxury-logo span {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+.luxury-nav {
+  display: flex;
+  gap: 2rem;
+}
+.luxury-nav a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+.luxury-nav a:hover, .luxury-nav a.active {
+  color: var(--gold);
+}
+.btn-outline-gold {
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  padding: 0.6rem 1.5rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-outline-gold:hover {
+  background: var(--gold);
+  color: #000;
+}
+.btn-gold {
+  background: var(--gold);
+  border: 1px solid var(--gold);
+  color: #000;
+  padding: 0.8rem 2rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-gold:hover {
+  background: var(--gold-light);
+  border-color: var(--gold-light);
+}
+
+/* HERO */
+.luxury-hero {
+  position: relative;
+  height: 100vh;
+  min-height: 600px;
+  display: flex;
+  align-items: center;
+  padding: 0 4rem;
+  overflow: hidden;
+}
+.luxury-hero-bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 1;
+}
+.luxury-hero-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+}
+.luxury-hero-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(to right, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 60%, rgba(0,0,0,0) 100%);
+  z-index: 2;
+}
+.luxury-hero-content {
+  position: relative;
+  z-index: 10;
+  max-width: 600px;
+}
+.luxury-hero-content h2 {
+  color: var(--gold);
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+}
+.luxury-hero-content h1 {
+  font-size: 4.5rem;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+}
+.luxury-hero-content p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #ddd;
+  margin-bottom: 2.5rem;
+  max-width: 450px;
+}
+.luxury-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+.btn-play {
+  background: transparent;
+  border: 1px solid var(--gold);
+  border-radius: 50%;
+  width: 40px; height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--gold);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-play:hover {
+  background: var(--gold);
+  color: #000;
+}
+.hero-portfolio-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #fff;
+  text-decoration: none;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.hero-portfolio-link:hover .btn-play {
+  background: var(--gold);
+  color: #000;
+}
+
+/* SOCIAL BAR */
+.luxury-social-bar {
+  position: absolute;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 1.5rem 0.8rem;
+  border-radius: 4px;
+}
+.luxury-social-bar a {
+  color: #fff;
+  transition: color 0.3s;
+}
+.luxury-social-bar a:hover {
+  color: var(--gold);
+}
+
+/* SERVICES GRID */
+.luxury-services {
+  display: flex;
+  width: 100%;
+  margin-top: 4rem;
+}
+.luxury-service-card {
+  flex: 1;
+  position: relative;
+  height: 400px;
+  overflow: hidden;
+  cursor: pointer;
+  border-right: 1px solid #222;
+}
+.luxury-service-card:last-child {
+  border-right: none;
+}
+.luxury-service-bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  transition: transform 0.7s;
+}
+.luxury-service-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.6;
+}
+.luxury-service-card:hover .luxury-service-bg {
+  transform: scale(1.05);
+}
+.luxury-service-card:hover .luxury-service-bg img {
+  opacity: 1;
+}
+.luxury-service-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 50%, rgba(0,0,0,0) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+.luxury-service-icon {
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+.luxury-service-overlay h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  font-family: 'Playfair Display', serif;
+}
+.luxury-service-overlay p {
+  font-size: 0.7rem;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  max-width: 80%;
+}
+
+/* ABOUT SECTION */
+.luxury-about {
+  background: var(--dark-bg);
+  padding: 6rem 0;
+  position: relative;
+}
+.luxury-about-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+.luxury-about-content {
+  flex: 1;
+  max-width: 500px;
+  z-index: 2;
+}
+.luxury-about-content h2 {
+  font-size: 3rem;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+}
+.luxury-about-content p.desc {
+  color: #ddd;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+.luxury-about-list {
+  list-style: none;
+  margin-bottom: 3rem;
+}
+.luxury-about-list li {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+  color: #ccc;
+  font-size: 0.95rem;
+}
+.luxury-about-list li svg {
+  color: var(--gold);
+}
+.luxury-about-image {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  min-height: 300px;
+}
+.luxury-about-image img {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+.luxury-stamp {
+  position: absolute;
+  top: 50%;
+  left: -80px;
+  transform: translateY(-50%);
+  width: 160px;
+  height: 160px;
+  animation: rotate 20s linear infinite;
+  z-index: 3;
+}
+.luxury-stamp img {
+  width: 100%;
+  height: 100%;
+}
+@keyframes rotate {
+  from { transform: translateY(-50%) rotate(0deg); }
+  to { transform: translateY(-50%) rotate(360deg); }
+}
+
+/* PORTFOLIO SECTION */
+.luxury-portfolio {
+  padding: 5rem 4rem;
+  background: var(--dark-surface);
+}
+.luxury-portfolio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 3rem;
+}
+.luxury-portfolio-header h4 {
+  color: var(--gold);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+.luxury-portfolio-header h2 {
+  font-size: 2.5rem;
+}
+.luxury-portfolio-marquee {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  background: var(--dark-surface);
+}
+.luxury-portfolio-marquee-track {
+  display: flex;
+  gap: 1rem;
+  width: max-content;
+  animation: marquee-scroll 40s linear infinite;
+}
+.luxury-portfolio-marquee-track:hover {
+  animation-play-state: paused;
+}
+@keyframes marquee-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.luxury-portfolio-item {
+  width: 350px;
+  height: 350px;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.luxury-portfolio-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s;
+}
+.luxury-portfolio-item:hover img {
+  transform: scale(1.05);
+}
+
+/* FOOTER STATS */
+.luxury-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 4rem;
+  background: var(--dark-bg);
+  border-top: 1px solid #222;
+}
+.luxury-stat-item {
+  text-align: center;
+  padding: 0 2rem;
+  border-right: 1px solid #222;
+}
+.luxury-stat-item:last-child {
+  border-right: none;
+}
+.luxury-stat-icon {
+  color: var(--gold);
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: center;
+}
+.luxury-stat-value {
+  font-size: 2rem;
+  color: var(--gold);
+  font-family: 'Playfair Display', serif;
+  margin-bottom: 0.5rem;
+}
+.luxury-stat-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #ddd;
+  margin-bottom: 0.5rem;
+}
+.luxury-stat-desc {
+  font-size: 0.8rem;
+  color: #777;
+}
+
+@media (max-width: 1024px) {
+  .luxury-services { flex-direction: column; }
+  .luxury-service-card { height: 250px; border-right: none; border-bottom: 1px solid #222; }
+  .luxury-about { padding: 4rem 0; }
+  .luxury-about-container { flex-direction: column; text-align: center; }
+  .luxury-stamp { left: auto; right: 2rem; top: -80px; transform: none; }
+  @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .luxury-portfolio-grid { grid-template-columns: repeat(2, 1fr); }
+  .luxury-stats { grid-template-columns: repeat(2, 1fr); gap: 3rem 0; }
+  .luxury-stat-item:nth-child(2) { border-right: none; }
+  .luxury-stat-item { padding: 0 1rem; }
+  .luxury-header { padding: 1.5rem 2rem; }
+  .luxury-hero { padding: 0 2rem; }
+  .luxury-hero-content h1 { font-size: 3rem; }
+}
+@media (max-width: 768px) {
+  .luxury-portfolio-grid { grid-template-columns: 1fr; }
+  .luxury-portfolio-item.large { grid-column: auto; }
+  .luxury-stats { grid-template-columns: 1fr; }
+  .luxury-stat-item { border-right: none; border-bottom: 1px solid #222; padding: 2rem 0; }
+  .luxury-stat-item:last-child { border-bottom: none; }
+  .luxury-nav { display: none; } /* Could add a mobile menu later */
+}
+
+/* INNER PAGES GENERIC STYLES */
+.luxury-inner-page {
+  padding-top: 120px;
+  min-height: calc(100vh - 300px);
+  background-color: var(--dark-bg);
+}
+.luxury-page-header {
+  text-align: center;
+  margin-bottom: 4rem;
+  padding: 0 2rem;
+}
+.luxury-page-header h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+.luxury-page-header p {
+  color: var(--gray-text);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* FORMS */
+.luxury-form-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 3rem;
+  background-color: var(--dark-surface);
+  border: 1px solid #222;
+  border-radius: 4px;
+}
+.luxury-form-group {
+  margin-bottom: 1.5rem;
+}
+.luxury-form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #ccc;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.luxury-form-control {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  background-color: transparent;
+  border: 1px solid #333;
+  color: #fff;
+  border-radius: 4px;
+  font-family: 'Inter', sans-serif;
+  transition: border-color 0.3s;
+}
+.luxury-form-control:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+.luxury-form-control::placeholder {
+  color: #555;
+}
+
+/* CARDS FOR INNER PAGES */
+.luxury-card {
+  background-color: var(--dark-surface);
+  border: 1px solid #222;
+  padding: 2rem;
+  border-radius: 4px;
+}
+
+/* BLOG SECTION */
+.luxury-blog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+  padding: 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.luxury-blog-card {
+  background: var(--dark-surface);
+  border-radius: 4px;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+  border: 1px solid #222;
+}
+.luxury-blog-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--gold);
+}
+.luxury-blog-card-image {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+.luxury-blog-card-content {
+  padding: 1.5rem;
+}
+.luxury-blog-card-category {
+  color: var(--gold);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+.luxury-blog-card-title {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  font-family: 'Playfair Display', serif;
+}
+.luxury-blog-card-excerpt {
+  color: #aaa;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+.luxury-blog-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #777;
+  font-size: 0.8rem;
+  border-top: 1px solid #222;
+  padding-top: 1rem;
+}
+.luxury-blog-card-meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* BLOG POST (SINGLE) */
+.luxury-blog-post {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+}
+.luxury-blog-post-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+.luxury-blog-post-category {
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+.luxury-blog-post-title {
+  font-size: 3rem;
+  line-height: 1.2;
+  margin-bottom: 1.5rem;
+  font-family: 'Playfair Display', serif;
+}
+.luxury-blog-post-meta {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  color: #888;
+  font-size: 0.9rem;
+}
+.luxury-blog-post-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.luxury-blog-post-image {
+  width: 100%;
+  max-height: 500px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 3rem;
+}
+.luxury-blog-post-content {
+  font-size: 1.1rem;
+  line-height: 1.8;
+  color: #ccc;
+}
+.luxury-blog-post-content p {
+  margin-bottom: 1.5rem;
+}
+.luxury-blog-post-actions {
+  margin-top: 4rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #333;
+}
+.btn-like {
+  background: transparent;
+  border: 1px solid #555;
+  color: #fff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn-like:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.btn-like.liked {
+  background: var(--gold);
+  color: #000;
+  border-color: var(--gold);
+}

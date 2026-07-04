@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, ChevronRight, Home } from 'lucide-react';
 import PublicFooter from './PublicFooter';
+import PublicHeader from './PublicHeader';
+import '../Home.css';
 
 const LegalPageLayout = ({ title, lastUpdated, children }) => {
   const navigate = useNavigate();
@@ -11,34 +13,39 @@ const LegalPageLayout = ({ title, lastUpdated, children }) => {
   }, []);
 
   return (
-    <div className="legal-page-wrapper">
-      <header className="legal-header">
-        <div className="legal-nav-container">
-          <Link to="/" className="brand-legal">
-            <img src="/logo.jpg" alt="Logo" />
-            <span>Mayclick Photography</span>
-          </Link>
-          <div className="breadcrumb">
-            <Link to="/"><Home size={14} /> Início</Link>
-            <ChevronRight size={14} />
-            <span className="current">{title}</span>
-          </div>
-        </div>
-      </header>
+    <div className="home-luxury-wrapper">
+      <PublicHeader />
 
-      <main className="legal-main">
-        <div className="legal-container">
-          <button className="back-btn" onClick={() => navigate(-1)}>
-            <ArrowLeft size={18} /> Voltar
+      <main className="luxury-inner-page" style={{ paddingTop: '100px' }}>
+        <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '2rem' }}>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', color: '#888', marginBottom: '2rem' }}>
+            <Link to="/" style={{ color: '#888', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+              <Home size={14} /> Início
+            </Link>
+            <ChevronRight size={14} />
+            <span style={{ color: 'var(--gold)' }}>{title}</span>
+          </div>
+
+          <button 
+            onClick={() => navigate(-1)} 
+            style={{ 
+              background: 'none', border: 'none', color: '#aaa', display: 'flex', alignItems: 'center', gap: '0.5rem', 
+              marginBottom: '2rem', cursor: 'pointer', fontSize: '0.9rem' 
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--gold)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#aaa'}
+          >
+            <ArrowLeft size={16} /> Voltar
           </button>
 
-          <article className="legal-card fade-in">
-            <header className="legal-article-header">
-              <h1>{title}</h1>
-              {lastUpdated && <p className="last-updated">Última atualização: {lastUpdated}</p>}
+          <article className="luxury-card">
+            <header style={{ marginBottom: '3rem', borderBottom: '1px solid #222', paddingBottom: '2rem' }}>
+              <h1 className="serif-title" style={{ fontSize: '2.5rem', color: 'var(--gold)', marginBottom: '0.5rem' }}>{title}</h1>
+              {lastUpdated && <p style={{ color: '#666', fontSize: '0.9rem' }}>Última atualização: {lastUpdated}</p>}
             </header>
 
-            <div className="legal-content-body">
+            <div className="legal-content-body" style={{ color: '#ccc', lineHeight: 1.8, fontSize: '1rem' }}>
               {children}
             </div>
           </article>
@@ -48,172 +55,28 @@ const LegalPageLayout = ({ title, lastUpdated, children }) => {
       <PublicFooter />
 
       <style>{`
-        .legal-page-wrapper {
-          background-color: #fafafa;
-          min-height: 100vh;
-          display: flex;
-          flex-direction: column;
+        .legal-content-body h1, .legal-content-body h2, .legal-content-body h3 {
+          color: #fff;
+          margin-top: 2.5rem;
+          margin-bottom: 1rem;
+          font-family: 'Playfair Display', serif;
         }
-
-        .legal-header {
-          background-color: #fff;
-          border-bottom: 1px solid var(--border);
-          padding: 1.5rem 0;
-          position: sticky;
-          top: 0;
-          z-index: 1000;
-        }
-
-        .legal-nav-container {
-          max-width: 1000px;
-          margin: 0 auto;
-          padding: 0 2rem;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-
-        .brand-legal {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          text-decoration: none;
-          color: var(--primary);
-          font-weight: 800;
-        }
-
-        .brand-legal img {
-          width: 36px;
-          height: 36px;
-          border-radius: 50%;
-          border: 1.5px solid var(--accent);
-        }
-
-        .breadcrumb {
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          font-size: 0.75rem;
-          color: var(--text-muted);
-        }
-
-        .breadcrumb a {
-          color: inherit;
-          text-decoration: none;
-          display: flex;
-          align-items: center;
-          gap: 0.25rem;
-        }
-
-        .breadcrumb .current {
-          color: var(--accent);
-          font-weight: 700;
-        }
-
-        .legal-main {
-          flex: 1;
-          padding: 3rem 0;
-        }
-
-        .legal-container {
-          max-width: 1000px;
-          margin: 0 auto;
-          padding: 0 2rem;
-        }
-
-        .back-btn {
-          background: none;
-          border: none;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          color: var(--text-muted);
-          font-weight: 700;
-          font-size: 0.875rem;
-          cursor: pointer;
-          margin-bottom: 2rem;
-          transition: var(--transition);
-        }
-
-        .back-btn:hover {
-          color: var(--accent);
-          transform: translateX(-4px);
-        }
-
-        .legal-card {
-          background-color: #fff;
-          border-radius: 20px;
-          padding: 4rem;
-          box-shadow: var(--shadow-md);
-          border: 1px solid var(--border);
-        }
-
-        .legal-article-header {
-          margin-bottom: 3rem;
-          border-bottom: 1px solid var(--border);
-          padding-bottom: 2rem;
-        }
-
-        .legal-article-header h1 {
-          font-size: 2.5rem;
-          color: var(--primary);
-          margin-bottom: 0.5rem;
-          letter-spacing: -0.02em;
-        }
-
-        .last-updated {
-          font-size: 0.875rem;
-          color: var(--text-muted);
-        }
-
-        .legal-content-body {
-          color: #444;
-          line-height: 1.8;
-          font-size: 1.0625rem;
-        }
-
-        .legal-content-body h3 {
-          color: var(--primary);
-          font-size: 1.25rem;
-          margin: 2.5rem 0 1rem 0;
-          font-weight: 800;
-        }
-
         .legal-content-body p {
           margin-bottom: 1.5rem;
         }
-
-        .legal-content-body ul {
-          margin-bottom: 2rem;
+        .legal-content-body ul, .legal-content-body ol {
+          margin-bottom: 1.5rem;
           padding-left: 1.5rem;
         }
-
         .legal-content-body li {
-          margin-bottom: 0.75rem;
+          margin-bottom: 0.5rem;
         }
-
-        .legal-content-body strong {
-          color: var(--primary);
-        }
-
         .legal-content-body a {
-          color: var(--accent);
-          font-weight: 700;
+          color: var(--gold);
+          text-decoration: none;
         }
-
-        @media (max-width: 768px) {
-          .legal-card {
-            padding: 2.5rem 1.5rem;
-          }
-          .legal-article-header h1 {
-            font-size: 1.875rem;
-          }
-          .legal-header {
-            padding: 1rem 0;
-          }
-          .breadcrumb {
-            display: none;
-          }
+        .legal-content-body a:hover {
+          text-decoration: underline;
         }
       `}</style>
     </div>

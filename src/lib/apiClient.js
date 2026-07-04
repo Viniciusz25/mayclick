@@ -14,8 +14,8 @@ const normalizeApiUrl = (rawUrl) => {
 
 const API_URL = normalizeApiUrl(import.meta.env.VITE_API_URL);
 
-const SESSION_EXPIRED_MESSAGE = 'Sessão expirada. Faça login novamente.';
-const NO_SERVER_SAVE_MESSAGE = 'Não foi possível salvar no servidor. Verifique a conexão/API e tente novamente.';
+const SESSION_EXPIRED_MESSAGE = 'SessÃ£o expirada. FaÃ§a login novamente.';
+const NO_SERVER_SAVE_MESSAGE = 'NÃ£o foi possÃ­vel salvar no servidor. Verifique a conexÃ£o/API e tente novamente.';
 
 const isAdminEndpoint = (endpoint = '') => endpoint.startsWith('/admin');
 
@@ -428,7 +428,7 @@ export const uploadImage = async (file) => {
   return responseBody; // { url, filename }
 };
 
-// Upload múltiplas imagens de uma vez
+// Upload mÃºltiplas imagens de uma vez
 export const uploadImagesBulk = async (files) => {
   const token = localStorage.getItem('mayclick_auth_token');
   if (!token) {
@@ -510,3 +510,12 @@ export const getPublicHomeData = () => apiFetch('/public/home-data');
 // PUBLIC PORTFOLIO
 export const getPublicPortfolio = () => apiFetch('/public/portfolio');
 export const getPublicCategoryGallery = (slug) => apiFetch(`/public/portfolio/${slug}`);
+
+// BLOG API
+export const getBlogPosts = () => apiFetch('/blog');
+export const getBlogPostBySlug = (slug) => apiFetch(`/blog/${slug}`);
+export const incrementBlogPostViews = (slug) => apiFetch(`/blog/${slug}/views`, { method: 'POST' });
+export const likeBlogPost = (slug) => apiFetch(`/blog/${slug}/like`, { method: 'POST' });
+export const createBlogPost = (data) => apiFetch('/blog', { method: 'POST', body: JSON.stringify(data) });
+export const updateBlogPost = (id, data) => apiFetch(`/blog/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+export const deleteBlogPost = (id) => apiFetch(`/blog/${id}`, { method: 'DELETE' });
