@@ -699,36 +699,83 @@ const PublicForm = () => {
               {packagesNotice && <p className="text-sm text-muted mb-4">{packagesNotice}</p>}
 
               <div className="selection-list">
-                {packages.map(pkg => (
-                  <label key={pkg.id || pkg.name} className={`selection-item ${formData.selectedPackageId === pkg.id ? 'selected' : ''}`}>
-                    <input
-                      type="radio"
-                      name="package"
-                      required
-                      checked={formData.selectedPackageId === pkg.id}
-                      disabled={packagesSource !== 'api'}
-                      onChange={() => handleChange(null, 'selectedPackageId', pkg.id)}
-                    />
-                    <div className="selection-content">
-                      <div className="selection-header">
-                        <span className="selection-name">{pkg.name || 'Pacote'}</span>
-                        <button
-                          type="button"
-                          className="btn-info-pkg"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setModalPackage(pkg);
-                          }}
-                        >
-                          <Info size={16} /> Detalhes
-                        </button>
+                {['infantil', 'adulto', 'debutante', 'casamento'].map(cat => {
+                  const catPackages = packages
+                    .filter(p => p.category === cat)
+                    .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+                  
+                  if (catPackages.length === 0) return null;
+
+                  const getCatProps = (c) => {
+                    if (c === 'infantil') return { title: '👶 Infantil', color: '#E4C26A', bg: 'rgba(200, 155, 60, 0.1)' };
+                    if (c === 'adulto') return { title: '🧑 Adulto', color: '#F4E8C6', bg: 'rgba(230, 211, 163, 0.1)' };
+                    if (c === 'debutante') return { title: '👑 Debutante', color: '#E4B8B2', bg: 'rgba(201, 140, 132, 0.1)' };
+                    if (c === 'casamento') return { title: '💍 Casamento', color: '#F5D76E', bg: 'rgba(212, 175, 55, 0.1)' };
+                    return { title: '📸 Outros', color: 'var(--accent)', bg: 'rgba(255, 255, 255, 0.05)' };
+                  };
+                  
+                  const props = getCatProps(cat);
+
+                  return (
+                    <div key={cat} className="package-group" style={{ marginBottom: '1.5rem' }}>
+                      <h3 style={{ 
+                        color: props.color, 
+                        marginBottom: '0.75rem', 
+                        fontSize: '1.1rem', 
+                        fontWeight: '600', 
+                        borderBottom: `1px solid ${props.color}40`, 
+                        paddingBottom: '0.5rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem'
+                      }}>
+                        {props.title}
+                      </h3>
+                      <div style={{ display: 'grid', gap: '0.75rem' }}>
+                        {catPackages.map(pkg => {
+                          const isSelected = formData.selectedPackageId === pkg.id;
+                          return (
+                            <label key={pkg.id || pkg.name} className={`selection-item ${isSelected ? 'selected' : ''}`} style={{
+                              borderColor: isSelected ? props.color : `${props.color}60`,
+                              backgroundColor: isSelected ? props.bg : 'var(--bg-page)',
+                              marginBottom: 0
+                            }}>
+                              <input
+                                type="radio"
+                                name="package"
+                                required
+                                checked={isSelected}
+                                disabled={packagesSource !== 'api'}
+                                onChange={() => handleChange(null, 'selectedPackageId', pkg.id)}
+                              />
+                              <div className="selection-content">
+                                <div className="selection-header">
+                                  <span className="selection-name" style={{ color: isSelected ? props.color : 'var(--text)' }}>
+                                    {pkg.name || 'Pacote'}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    className="btn-info-pkg"
+                                    style={{ color: isSelected ? props.color : '' }}
+                                    onClick={(e) => {
+                                      e.preventDefault();
+                                      e.stopPropagation();
+                                      setModalPackage(pkg);
+                                    }}
+                                  >
+                                    <Info size={16} /> Detalhes
+                                  </button>
+                                </div>
+                                {pkg.description && <p className="selection-desc line-clamp-1">{pkg.description}</p>}
+                              </div>
+                              {isSelected && <CheckCircle size={20} className="selection-check" style={{ color: props.color }} />}
+                            </label>
+                          );
+                        })}
                       </div>
-                      {pkg.description && <p className="selection-desc line-clamp-1">{pkg.description}</p>}
                     </div>
-                    {formData.selectedPackageId === pkg.id && <CheckCircle size={20} className="selection-check" />}
-                  </label>
-                ))}
+                  );
+                })}
               </div>
             </section>
 
