@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   Camera, Save, Plus, Trash, RefreshCw, Package, PlusCircle,
-  FileText, Info, CheckCircle, RotateCcw
+  FileText, Info, CheckCircle, RotateCcw, Copy
 } from 'lucide-react';
 import useSettings from '../hooks/useSettings';
 import { pricingData } from '../data/pricing';
@@ -24,9 +24,10 @@ import {
   deleteExtra,
 } from '../lib/apiClient';
 
-const DEFAULT_CATEGORIES = ['infantil', 'debutante', 'casamento'];
+const DEFAULT_CATEGORIES = ['infantil', 'adulto', 'debutante', 'casamento'];
 const CATEGORY_LABELS = {
   infantil: 'Infantil',
+  adulto: 'Adulto',
   debutante: 'Debutante',
   casamento: 'Casamento',
 };
@@ -289,6 +290,17 @@ const BusinessSettings = () => {
     const nextFeatures = safeArray(editingPackage.features).filter((_, itemIndex) => itemIndex !== index);
     updateEditingPackage('features', nextFeatures);
     updateEditingPackage('comparison_items', nextFeatures);
+  };
+
+  const handleClonePackage = (pkg) => {
+    if (packageSource !== 'api') return;
+    const sortOrder = Math.max(0, ...packages.filter((p) => p.category === activeCategory).map((p) => Number(p.sort_order || 0))) + 10;
+    
+    const clone = JSON.parse(JSON.stringify(pkg));
+    delete clone.id;
+    clone.name = `${clone.name} (Cópia)`;
+    clone.sort_order = sortOrder;
+    setEditingPackage(clone);
   };
 
   const handleNewPackage = () => {
@@ -566,9 +578,14 @@ const BusinessSettings = () => {
                         <h3>{editingPackage.id ? 'Editar Pacote' : 'Novo Pacote'}</h3>
                         <div className="flex gap-2">
                           {editingPackage.id && (
-                            <button className="btn btn-outline btn-sm" onClick={() => handleTogglePackage(editingPackage)} disabled={isPackageFallback}>
-                              <RotateCcw size={14} /> {editingPackage.active ? 'Desativar' : 'Reativar'}
-                            </button>
+                            <>
+                              <button className="btn btn-outline btn-sm" onClick={() => handleClonePackage(editingPackage)} disabled={isPackageFallback}>
+                                <Copy size={14} /> Clonar
+                              </button>
+                              <button className="btn btn-outline btn-sm" onClick={() => handleTogglePackage(editingPackage)} disabled={isPackageFallback}>
+                                <RotateCcw size={14} /> {editingPackage.active ? 'Desativar' : 'Reativar'}
+                              </button>
+                            </>
                           )}
                           <button className="btn btn-outline btn-sm" onClick={handleCancelPackage}>Cancelar</button>
                           <button className="btn btn-accent btn-sm" onClick={handleSavePackage} disabled={isPackageFallback}>
