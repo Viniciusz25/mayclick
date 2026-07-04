@@ -316,6 +316,15 @@ const PublicForm = () => {
     }
   };
 
+  const availableCategories = [...new Set(packages.map(p => p.category))].filter(Boolean);
+  const getCategoryLabel = (c) => {
+    if (c === 'infantil') return '👶 Infantil';
+    if (c === 'adulto') return '🧑 Adulto';
+    if (c === 'debutante') return '👑 Debutante';
+    if (c === 'casamento') return '💍 Casamento';
+    return c.charAt(0).toUpperCase() + c.slice(1);
+  };
+
   return (
     <div className="public-form-page">
       <CookieBanner />
@@ -568,13 +577,21 @@ const PublicForm = () => {
 
               <div className="grid grid-2">
                 <div className="form-group">
-                  <label>Tipo de Evento</label>
-                  <input
+                  <label>Tipo de Evento *</label>
+                  <select
+                    required
                     className="form-control"
-                    placeholder="Ex: Infantil / Debutante / Casamento"
                     value={formData.event.type}
-                    onChange={(e) => handleChange('event', 'type', e.target.value)}
-                  />
+                    onChange={(e) => {
+                      handleChange('event', 'type', e.target.value);
+                      handleChange(null, 'selectedPackageId', '');
+                    }}
+                  >
+                    <option value="" disabled>Selecione o tipo de evento</option>
+                    {availableCategories.map(cat => (
+                      <option key={cat} value={cat}>{getCategoryLabel(cat)}</option>
+                    ))}
+                  </select>
                 </div>
                 <div className="form-group">
                   <label>Idade / Motivo *</label>
@@ -699,7 +716,12 @@ const PublicForm = () => {
               {packagesNotice && <p className="text-sm text-muted mb-4">{packagesNotice}</p>}
 
               <div className="selection-list">
-                {['infantil', 'adulto', 'debutante', 'casamento'].map(cat => {
+                {!formData.event.type ? (
+                  <p className="text-muted" style={{ padding: '2rem 0', textAlign: 'center', background: 'var(--bg-page)', borderRadius: 'var(--radius)', border: '1px dashed var(--border)' }}>
+                    Por favor, selecione o <strong>Tipo de Evento</strong> na seção 3 para visualizar os pacotes disponíveis.
+                  </p>
+                ) : (
+                  ['infantil', 'adulto', 'debutante', 'casamento'].filter(cat => cat === formData.event.type).map(cat => {
                   const catPackages = packages
                     .filter(p => p.category === cat)
                     .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
@@ -775,7 +797,8 @@ const PublicForm = () => {
                       </div>
                     </div>
                   );
-                })}
+                })
+                )}
               </div>
             </section>
 
