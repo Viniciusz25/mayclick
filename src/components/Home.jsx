@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Play, CheckCircle, Camera, MapPin, Heart, Clock, Mail, Star, Award } from 'lucide-react';
+import { Play, CheckCircle, Camera, MapPin, Heart, Clock, Mail, Star, Award, Folder } from 'lucide-react';
 import useSettings from '../hooks/useSettings';
 import PublicFooter from './PublicFooter';
 import CookieBanner from './CookieBanner';
@@ -249,27 +249,27 @@ const Home = () => {
         <section className="luxury-stats">
           <div className="luxury-stat-item">
             <div className="luxury-stat-icon"><Camera size={32} /></div>
-            <div className="luxury-stat-value">{s.stat_events || "500+"}</div>
-            <div className="luxury-stat-label">Eventos Realizados</div>
-            <div className="luxury-stat-desc">Histórias eternizadas</div>
-          </div>
-          <div className="luxury-stat-item">
-            <div className="luxury-stat-icon"><Heart size={32} /></div>
-            <div className="luxury-stat-value">{s.stat_clients || "98%"}</div>
-            <div className="luxury-stat-label">Clientes Satisfeitos</div>
-            <div className="luxury-stat-desc">Confiança que inspira</div>
+            <div className="luxury-stat-value">+380</div>
+            <div className="luxury-stat-label">Eventos Registrados</div>
+            <div className="luxury-stat-desc">Casamentos • Debutantes • Infantis</div>
           </div>
           <div className="luxury-stat-item">
             <div className="luxury-stat-icon"><Star size={32} /></div>
-            <div className="luxury-stat-value">{s.stat_stories || "15+"}</div>
-            <div className="luxury-stat-label">Prêmios Recebidos</div>
-            <div className="luxury-stat-desc">Reconhecimento nacional</div>
+            <div className="luxury-stat-value">+15 mil pessoas</div>
+            <div className="luxury-stat-label">Fotografadas</div>
+            <div className="luxury-stat-desc"></div>
           </div>
           <div className="luxury-stat-item">
-            <div className="luxury-stat-icon"><Award size={32} /></div>
-            <div className="luxury-stat-value">{s.stat_experience || "7"}</div>
-            <div className="luxury-stat-label">Anos de Experiência</div>
-            <div className="luxury-stat-desc">No mercado de casamentos</div>
+            <div className="luxury-stat-icon"><Heart size={32} /></div>
+            <div className="luxury-stat-value">10 anos</div>
+            <div className="luxury-stat-label">de Experiência</div>
+            <div className="luxury-stat-desc">realizando sonhos em historias eternizadas</div>
+          </div>
+          <div className="luxury-stat-item">
+            <div className="luxury-stat-icon"><Folder size={32} /></div>
+            <div className="luxury-stat-value">+120 mil</div>
+            <div className="luxury-stat-label">Fotos Entregues</div>
+            <div className="luxury-stat-desc">Editadas em alta resolução</div>
           </div>
         </section>
 
