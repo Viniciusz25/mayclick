@@ -1043,9 +1043,16 @@ const ManualBudget = () => {
 
         @media (max-width: 992px) {
           .budget-builder-layout { grid-template-columns: 1fr; }
-          .summary-column { order: -1; }
+          .summary-column { order: 1; }
           .sticky-summary { position: relative; top: 0; }
           .travel-options-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+
+        @media (max-width: 768px) {
+          .payment-methods-grid-modern { grid-template-columns: 1fr; }
+          .category-nav { flex-wrap: wrap; }
+          .extra-hours-selector .flex { flex-direction: column; align-items: stretch; gap: 1rem; }
+          .extra-hours-selector .flex > div:last-child { justify-content: space-between; width: 100%; }
         }
 
         @media (max-width: 520px) {

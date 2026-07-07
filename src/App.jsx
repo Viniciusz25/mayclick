@@ -13,6 +13,7 @@ import PublicForm from './components/PublicForm';
 import Home from './components/Home';
 import SuccessPage from './components/SuccessPage';
 import ErrorBoundary from './components/ErrorBoundary';
+import Agenda from './components/Agenda';
 import HomepageSettings from './components/HomepageSettings';
 import PortfolioPage from './components/PortfolioPage';
 import CategoryGallery from './components/CategoryGallery';
@@ -26,7 +27,7 @@ import useSettings from './hooks/useSettings';
 import {
   LogOut, LayoutDashboard, Settings, User,
   Camera, FileText, Calculator, Menu, X,
-  ChevronRight, ExternalLink, Globe
+  ChevronRight, ExternalLink, Globe, Calendar
 } from 'lucide-react';
 
 import DynamicStyles from './components/DynamicStyles';
@@ -51,6 +52,7 @@ const AdminLayout = ({ children, handleLogout }) => {
     { path: '/app/dashboard', label: 'Painel', icon: <LayoutDashboard size={20} /> },
     { path: '/app/orcamentos', label: 'Orçamentos', icon: <Calculator size={20} /> },
     { path: '/app/respostas', label: 'Respostas', icon: <FileText size={20} /> },
+    { path: '/app/agenda', label: 'Agenda', icon: <Calendar size={20} /> },
     { path: '/app/blog', label: 'Blog', icon: <FileText size={20} /> },
     { path: '/app/configuracoes-pagina-inicial', label: 'Página Inicial', icon: <Globe size={20} /> },
     { path: '/app/configuracoes-negocio', label: 'Negócio', icon: <Settings size={20} /> },
@@ -475,6 +477,7 @@ function App() {
             <Route path="/app/orcamentos" element={<PrivateRoute><SavedBudgets /></PrivateRoute>} />
             <Route path="/app/orcamentos/novo" element={<PrivateRoute><ManualBudget /></PrivateRoute>} />
             <Route path="/app/orcamentos/:id" element={<PrivateRoute><BudgetDetails /></PrivateRoute>} />
+            <Route path="/app/agenda" element={<PrivateRoute><Agenda /></PrivateRoute>} />
             <Route path="/app/respostas" element={<PrivateRoute><Respostas /></PrivateRoute>} />
             <Route path="/app/respostas/:id" element={<PrivateRoute><SubmissionDetails /></PrivateRoute>} />
             <Route path="/app/blog" element={<PrivateRoute><AdminBlog /></PrivateRoute>} />

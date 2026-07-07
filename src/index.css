@@ -149,6 +149,8 @@ p {
 /* Form Elements Polish */
 .form-group {
   margin-bottom: 1.75rem;
+  min-width: 0;
+  max-width: 100%;
 }
 
 label {

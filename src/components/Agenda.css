@@ -1,0 +1,161 @@
+.agenda-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.agenda-content {
+  padding: 1.5rem;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+/* Customizing React Big Calendar for Mayclick Aesthetics */
+
+.rbc-calendar {
+  font-family: 'Outfit', sans-serif;
+  color: var(--text-primary);
+}
+
+.rbc-toolbar {
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rbc-toolbar button {
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 1.25rem;
+  background-color: transparent;
+  font-weight: 600;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.rbc-toolbar button:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+.rbc-toolbar button.rbc-active {
+  background-color: var(--accent);
+  color: var(--primary);
+  border-color: var(--accent);
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+}
+
+.rbc-toolbar button.rbc-active:hover {
+  background-color: var(--accent-hover);
+  color: var(--primary);
+}
+
+.rbc-toolbar .rbc-toolbar-label {
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.rbc-btn-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.rbc-btn-group + .rbc-btn-group {
+  margin-left: 1rem;
+}
+
+.rbc-month-view, .rbc-time-view, .rbc-agenda-view {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background-color: var(--bg-page);
+  box-shadow: var(--shadow-sm);
+}
+
+.rbc-header {
+  padding: 1rem 0.75rem;
+  font-weight: 700;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+  background-color: var(--bg-card);
+  color: var(--text-muted);
+}
+
+.rbc-month-row {
+  border-top: 1px solid var(--border);
+}
+
+.rbc-day-bg {
+  border-left: 1px solid var(--border);
+}
+
+.rbc-day-bg + .rbc-day-bg {
+  border-left: 1px solid var(--border);
+}
+
+.rbc-date-cell {
+  padding: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.rbc-off-range-bg {
+  background-color: rgba(0,0,0,0.1);
+}
+
+.rbc-today {
+  background-color: rgba(212, 175, 55, 0.05); /* very light accent */
+}
+
+/* Event Styling */
+.rbc-event {
+  background-color: var(--accent) !important;
+  border: none !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--primary) !important;
+  padding: 6px 10px !important;
+  font-size: 0.85rem;
+  font-weight: 700;
+  box-shadow: 0 4px 10px rgba(212, 175, 55, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin: 2px 4px;
+}
+
+.rbc-event:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(212, 175, 55, 0.3);
+  background-color: var(--accent-hover) !important;
+}
+
+.rbc-event-content {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  letter-spacing: -0.01em;
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
