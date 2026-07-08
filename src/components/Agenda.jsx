@@ -7,7 +7,7 @@ import getDay from 'date-fns/getDay';
 import ptBR from 'date-fns/locale/pt-BR';
 import { useNavigate } from 'react-router-dom';
 import { Calendar as CalendarIcon, Loader, RefreshCw, AlertCircle } from 'lucide-react';
-import { getBudgets } from '../lib/apiClient';
+import { getBudgets, getGoogleCalendarEvents } from '../lib/apiClient';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './Agenda.css';
 
@@ -33,17 +33,19 @@ const Agenda = () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await getBudgets({ status: 'approved' });
+      const [data, googleData] = await Promise.all([
+        getBudgets({ status: 'approved' }),
+        getGoogleCalendarEvents().catch(err => {
+          console.warn('Nao foi possivel carregar eventos do google', err);
+          return [];
+        })
+      ]);
       
       // Parse dates and map to calendar events
-      const calendarEvents = data
+      const systemEvents = data
         .filter(budget => budget.event_date) // Ensure there's a date
         .map(budget => {
-          // Assuming event_date is YYYY-MM-DD format
-          // If it is in another format, we might need to parse it differently
           const dateStr = budget.event_date;
-          // create a new Date. Note: new Date("YYYY-MM-DD") creates UTC midnight
-          // Let's create local midnight by splitting
           const [year, month, day] = dateStr.split('-');
           const start = new Date(year, month - 1, day);
           const end = new Date(year, month - 1, day); 
@@ -54,11 +56,38 @@ const Agenda = () => {
             start,
             end,
             allDay: true,
-            resource: budget
+            resource: budget,
+            source: 'system'
           };
         });
 
-      setEvents(calendarEvents);
+      const googleEvents = googleData.map(event => {
+         const isAllDay = !!event.start.date;
+         // Note: For all-day events, google returns exclusive end dates. 
+         // For proper rendering in react-big-calendar we just use the date itself, 
+         // but since it's already an exclusive date in google it might span an extra day. 
+         // A safe parsing is to just use start date for both start and end if it's 1-day.
+         let start = isAllDay ? new Date(event.start.date) : new Date(event.start.dateTime);
+         let end = isAllDay ? new Date(event.end.date) : new Date(event.end.dateTime);
+         
+         // Google Calendar all-day end dates are exclusive (i.e. +1 day). Big Calendar expects inclusive or exclusive depending on setup, but often standardizing to start date works for 1-day events.
+         // Subtract 1 ms to the end date if it is an all-day event to prevent spanning an extra day visually.
+         if (isAllDay) {
+           end = new Date(end.getTime() - 1);
+         }
+
+         return {
+            id: event.id,
+            title: `[G] ${event.summary || 'Sem Título'}`,
+            start,
+            end,
+            allDay: isAllDay,
+            resource: event,
+            source: 'google'
+         };
+      });
+
+      setEvents([...systemEvents, ...googleEvents]);
     } catch (err) {
       console.error('Error fetching budgets for agenda:', err);
       setError('Não foi possível carregar a agenda de eventos.');
@@ -72,8 +101,27 @@ const Agenda = () => {
   }, []);
 
   const handleSelectEvent = (event) => {
-    // Navigate to budget details when clicked
-    navigate(`/app/orcamentos/${event.resource.id}`);
+    if (event.source === 'system') {
+      navigate(`/app/orcamentos/${event.resource.id}`);
+    } else {
+      if (event.resource.htmlLink) {
+        window.open(event.resource.htmlLink, '_blank', 'noopener,noreferrer');
+      }
+    }
+  };
+
+  const eventStyleGetter = (event, start, end, isSelected) => {
+    let backgroundColor = event.source === 'google' ? '#4285F4' : 'var(--accent)';
+    return {
+      style: {
+        backgroundColor,
+        borderRadius: '5px',
+        opacity: 0.9,
+        color: 'white',
+        border: '0px',
+        display: 'block'
+      }
+    };
   };
 
   return (
@@ -111,6 +159,7 @@ const Agenda = () => {
               endAccessor="end"
               style={{ height: 'calc(100vh - 280px)', minHeight: '500px' }}
               onSelectEvent={handleSelectEvent}
+              eventPropGetter={eventStyleGetter}
               culture="pt-BR"
               messages={{
                 next: "Próximo",

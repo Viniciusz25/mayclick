@@ -17,6 +17,7 @@ import budgetsRoutes from './routes/budgets.routes.js';
 import homepageRoutes from './routes/homepage.routes.js';
 import uploadRoutes from './routes/upload.routes.js';
 import blogRoutes from './routes/blog.routes.js';
+import calendarRoutes from './routes/calendar.routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -105,6 +106,7 @@ app.use('/api/admin/documents', documentsRoutes);
 app.use('/api/admin/budgets', budgetsRoutes);
 app.use('/api/admin/homepage', homepageRoutes);
 app.use('/api/admin/upload', uploadRoutes);
+app.use('/api/admin/calendar', calendarRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

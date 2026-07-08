@@ -21,19 +21,7 @@ const toNumber = (value) => {
 
 const roundMoney = (value) => Math.round((Number(value) || 0) * 100) / 100;
 
-const TRAVEL_LABEL = 'Deslocamento ida e volta';
-const TRAVEL_OPTIONS = [
-  { label: 'Sem deslocamento', amount: 0 },
-  { label: TRAVEL_LABEL, amount: 120 },
-  { label: TRAVEL_LABEL, amount: 150 },
-  { label: TRAVEL_LABEL, amount: 190 },
-];
 
-const getTravelDisplayLines = (amount) => (
-  amount > 0
-    ? ['IDA E VOLTA']
-    : ['SEM', 'DESLOCAMENTO']
-);
 
 const normalizeDiscountType = (type) => (
   ['none', 'fixed', 'percentage'].includes(type) ? type : 'none'
@@ -209,25 +197,28 @@ const ManualBudget = () => {
     try {
       const pkg = packages.find(p => p.id === budget.selectedPackageId);
       const totals = calculateBudgetTotals({ budget, packages, modalities });
-      const budgetData = {
-        client_name: budget.client.name,
-        client_phone: budget.client.phone,
-        client_email: budget.client.email,
-        event_type: budget.event.type,
-        event_date: budget.event.date,
-        event_location: budget.event.address,
-        selected_package_id: budget.selectedPackageId,
-        selected_package_name: pkg?.name,
-        package_price: Number(pkg?.price || 0),
-        package_data: pkg || {},
-        extras_data: budget.selectedModalities.map(id => modalities.find(m => m.id === id)).filter(Boolean),
-        travel_data: {
-          label: TRAVEL_LABEL,
-          amount: totals.travelTotal,
-          value: totals.travelTotal,
-          extraHours: toNumber(budget.extraHours),
-          extraHourPrice: totals.extraHourPrice,
-        },
+      const transportOption = (businessSettings?.pricing?.transport || []).find(t => Number(t.price) === toNumber(budget.transportValue));
+        const travelLabel = transportOption ? transportOption.name : 'Deslocamento';
+
+        const budgetData = {
+          client_name: budget.client.name,
+          client_phone: budget.client.phone,
+          client_email: budget.client.email,
+          event_type: budget.event.type,
+          event_date: budget.event.date,
+          event_location: budget.event.address,
+          selected_package_id: budget.selectedPackageId,
+          selected_package_name: pkg?.name,
+          package_price: Number(pkg?.price || 0),
+          package_data: pkg || {},
+          extras_data: budget.selectedModalities.map(id => modalities.find(m => m.id === id)).filter(Boolean),
+          travel_data: {
+            label: travelLabel,
+            amount: totals.travelTotal,
+            value: totals.travelTotal,
+            extraHours: toNumber(budget.extraHours),
+            extraHourPrice: totals.extraHourPrice,
+          },
         discount_data: {
           type: totals.discountType,
           value: totals.discountType === 'none' ? 0 : totals.discountValue,
@@ -535,19 +526,17 @@ const ManualBudget = () => {
             <section className="card mb-4">
               <h2 className="section-title"><MapPin size={20} className="text-accent" /> Deslocamento</h2>
               <div className="travel-options-grid">
-                {TRAVEL_OPTIONS.map((option) => (
+                {(businessSettings?.pricing?.transport || []).map((option) => (
                   <button
-                    key={option.amount}
+                    key={option.id || option.name}
                     type="button"
-                    className={`travel-option ${toNumber(budget.transportValue) === option.amount ? 'selected' : ''}`}
-                    onClick={() => setBudget({ ...budget, transportValue: option.amount })}
+                    className={`travel-option ${toNumber(budget.transportValue) === Number(option.price) ? 'selected' : ''}`}
+                    onClick={() => setBudget({ ...budget, transportValue: option.price })}
                   >
-                    <span className="travel-option-label" aria-label={option.label}>
-                      {getTravelDisplayLines(option.amount).map((line) => (
-                        <span key={line}>{line}</span>
-                      ))}
+                    <span className="travel-option-label" aria-label={option.name}>
+                      {option.name.toUpperCase()}
                     </span>
-                    <strong>{formatBRL(option.amount)}</strong>
+                    <strong>{formatBRL(option.price)}</strong>
                   </button>
                 ))}
               </div>

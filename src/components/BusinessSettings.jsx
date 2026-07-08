@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
   Camera, Save, Plus, Trash, RefreshCw, Package, PlusCircle,
-  FileText, Info, CheckCircle, RotateCcw, Copy
+  FileText, Info, CheckCircle, RotateCcw, Copy, MapPin
 } from 'lucide-react';
 import useSettings from '../hooks/useSettings';
 import { pricingData } from '../data/pricing';
@@ -139,6 +139,7 @@ const BusinessSettings = () => {
   const [packageError, setPackageError] = useState('');
   const [packageSource, setPackageSource] = useState('api');
   const [extrasSource, setExtrasSource] = useState('api');
+  const [creatingExtra, setCreatingExtra] = useState(null);
 
   useEffect(() => {
     fetchPackages();
@@ -193,7 +194,7 @@ const BusinessSettings = () => {
     setExtrasSource('api');
     try {
       const data = await getExtras();
-      setExtras(Array.isArray(data) ? data.map(normalizeExtra) : []);
+      setExtras(Array.isArray(data) ? data.map(normalizeExtra).sort((a, b) => a.name.localeCompare(b.name)) : []);
     } catch (error) {
       console.error('[BusinessSettings] Error fetching extras:', {
         status: error.status,
@@ -201,7 +202,7 @@ const BusinessSettings = () => {
         message: error.message,
       });
       setExtrasSource('fallback');
-      setExtras((businessSettings.pricing?.modalities || []).map(normalizeExtra));
+      setExtras((businessSettings.pricing?.modalities || []).map(normalizeExtra).sort((a, b) => a.name.localeCompare(b.name)));
       setPackageError(`Não foi possível carregar extras do servidor (${error.status || 'sem status'}). Dados locais temporários. Não é possível salvar até reconectar ao servidor.`);
     }
   };
@@ -385,15 +386,23 @@ const BusinessSettings = () => {
     }
   };
 
-  const handleCreateExtra = async () => {
+  const handleCreateExtra = () => {
     if (extrasSource !== 'api') {
       alert('Dados locais temporários. Não é possível salvar até reconectar ao servidor.');
       return;
     }
+    setCreatingExtra({ name: '', price: 0, description: '', active: true });
+  };
 
+  const handleSaveNewExtra = async () => {
+    if (!creatingExtra.name) {
+      alert('O nome do extra é obrigatório.');
+      return;
+    }
     try {
-      await createExtra(extraPayload({ name: 'Novo Extra', price: 0, description: '', active: false, sort_order: extras.length }));
+      await createExtra(extraPayload({ ...creatingExtra, sort_order: extras.length }));
       await fetchExtras();
+      setCreatingExtra(null);
       showSaved();
     } catch (error) {
       alert(saveErrorMessage(error));
@@ -481,6 +490,9 @@ const BusinessSettings = () => {
             </button>
             <button className={`settings-nav-item ${activeTab === 'extras' ? 'active' : ''}`} onClick={() => setActiveTab('extras')}>
               <PlusCircle size={18} /> Extras e Ajustes
+            </button>
+            <button className={`settings-nav-item ${activeTab === 'deslocamento' ? 'active' : ''}`} onClick={() => setActiveTab('deslocamento')}>
+              <MapPin size={18} /> Deslocamento
             </button>
             <button className={`settings-nav-item ${activeTab === 'termos' ? 'active' : ''}`} onClick={() => setActiveTab('termos')}>
               <FileText size={18} /> Textos e PDF
@@ -721,6 +733,50 @@ const BusinessSettings = () => {
 
               {isExtrasFallback && <div className="warning-strip mb-4">Dados locais temporários. Não é possível salvar até reconectar ao servidor.</div>}
 
+              {creatingExtra && (
+                <div className="package-editor-card mb-4 border-2 border-accent">
+                  <div className="package-editor-header">
+                    <input
+                      className="package-name-input"
+                      placeholder="Nome do Novo Extra"
+                      value={creatingExtra.name}
+                      onChange={(e) => setCreatingExtra({ ...creatingExtra, name: e.target.value })}
+                      autoFocus
+                    />
+                    <div className="flex gap-2">
+                      <button className="btn-icon-danger" onClick={() => setCreatingExtra(null)}>
+                        <Trash size={16} />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="grid grid-2 mt-2">
+                    <div className="form-group">
+                      <label>Valor (R$)</label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        value={creatingExtra.price}
+                        onChange={(e) => setCreatingExtra({ ...creatingExtra, price: Number(e.target.value || 0) })}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Descrição</label>
+                      <input
+                        className="form-control"
+                        placeholder="Opcional"
+                        value={creatingExtra.description}
+                        onChange={(e) => setCreatingExtra({ ...creatingExtra, description: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <div className="mt-4 flex justify-end">
+                    <button className="btn btn-accent" onClick={handleSaveNewExtra}>
+                      <Save size={16} /> Salvar Novo Extra
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <div className="extras-editor-list">
                 {extras.map((extra) => (
                   <div key={extra.id} className="package-editor-card mb-4">
@@ -779,6 +835,70 @@ const BusinessSettings = () => {
                             setExtras(prev => prev.map((item) => (item.id === extra.id ? { ...item, description: nextDesc } : item)));
                           }}
                           onBlur={(event) => handleUpdateExtra(extra.id, { description: event.target.value })}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {activeTab === 'deslocamento' && (
+            <section className="card fade-in">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="section-title" style={{ margin: 0, border: 'none' }}>Valores de Deslocamento</h2>
+                <button 
+                  className="btn btn-accent btn-sm" 
+                  onClick={() => {
+                    const current = formData.pricing?.transport || [];
+                    handleNestedChange('pricing.transport', [
+                      ...current, 
+                      { id: Date.now().toString(), name: 'Novo Deslocamento', price: 0 }
+                    ]);
+                  }}
+                >
+                  <PlusCircle size={16} /> Adicionar Opção
+                </button>
+              </div>
+
+              <div className="extras-editor-list">
+                {(formData.pricing?.transport || []).map((item, index) => (
+                  <div key={item.id || index} className="package-editor-card mb-4 border-2 border-transparent hover:border-gray-200">
+                    <div className="package-editor-header">
+                      <input
+                        className="package-name-input"
+                        placeholder="Ex: Deslocamento Regional"
+                        value={item.name || ''}
+                        onChange={(e) => {
+                          const updated = [...(formData.pricing?.transport || [])];
+                          updated[index] = { ...updated[index], name: e.target.value };
+                          handleNestedChange('pricing.transport', updated);
+                        }}
+                      />
+                      <button 
+                        className="btn-icon-danger" 
+                        onClick={() => {
+                          const updated = [...(formData.pricing?.transport || [])];
+                          updated.splice(index, 1);
+                          handleNestedChange('pricing.transport', updated);
+                        }}
+                      >
+                        <Trash size={16} />
+                      </button>
+                    </div>
+                    <div className="grid grid-2 mt-2">
+                      <div className="form-group">
+                        <label>Valor (R$)</label>
+                        <input
+                          type="number"
+                          className="form-control"
+                          value={item.price}
+                          onChange={(e) => {
+                            const updated = [...(formData.pricing?.transport || [])];
+                            updated[index] = { ...updated[index], price: Number(e.target.value || 0) };
+                            handleNestedChange('pricing.transport', updated);
+                          }}
                         />
                       </div>
                     </div>

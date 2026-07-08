@@ -237,8 +237,9 @@ export const pricingData = {
     }
   ],
   transport: [
-    { id: 'isento', name: 'Isento', price: 0 },
-    { id: 'local', name: 'Deslocamento Local', price: 50.00 },
-    { id: 'regional', name: 'Deslocamento Regional', price: 150.00 }
+    { id: 'isento', name: 'Sem deslocamento', price: 0 },
+    { id: 'travel-1', name: 'Deslocamento ida e volta', price: 120.00 },
+    { id: 'travel-2', name: 'Deslocamento ida e volta', price: 150.00 },
+    { id: 'travel-3', name: 'Deslocamento ida e volta', price: 190.00 }
   ]
 };

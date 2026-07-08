@@ -1,4 +1,5 @@
 import pool from '../db.js';
+import { createCalendarEvent } from '../lib/googleCalendar.js';
 
 const JSON_FIELDS = new Set(['package_data', 'extras_data', 'travel_data', 'discount_data', 'payment_data']);
 const ALLOWED_BUDGET_FIELDS = [
@@ -216,7 +217,16 @@ export const updateBudget = async (req, res) => {
       return res.status(404).json({ error: 'Budget not found.' });
     }
 
-    res.json(result.rows[0]);
+    const updatedBudget = result.rows[0];
+
+    // Sincroniza com Google Calendar se aprovado
+    if (fields.status === 'approved') {
+      createCalendarEvent(updatedBudget).catch(err => {
+        console.error('[Budgets] Falha ao enviar para o Google Calendar:', err);
+      });
+    }
+
+    res.json(updatedBudget);
   } catch (error) {
     console.error('[Budgets] Error updating budget:', {
       message: error.message,

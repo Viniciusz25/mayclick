@@ -519,3 +519,9 @@ export const likeBlogPost = (slug) => apiFetch(`/blog/${slug}/like`, { method: '
 export const createBlogPost = (data) => apiFetch('/blog', { method: 'POST', body: JSON.stringify(data) });
 export const updateBlogPost = (id, data) => apiFetch(`/blog/${id}`, { method: 'PUT', body: JSON.stringify(data) });
 export const deleteBlogPost = (id) => apiFetch(`/blog/${id}`, { method: 'DELETE' });
+
+// ADMIN - CALENDAR
+export const getGoogleCalendarEvents = (filters = {}) => {
+  const params = new URLSearchParams(filters).toString();
+  return apiFetch(`/admin/calendar/events?${params}`);
+};
