@@ -397,7 +397,7 @@ const HomepageSettings = () => {
 
   return (
     <div className="homepage-settings-container">
-      <header className="settings-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <header className="settings-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h2>Página Inicial</h2>
           <p>Personalize todos os textos, imagens, depoimentos e categorias do seu site público</p>
@@ -1032,7 +1032,7 @@ const HomepageSettings = () => {
                   ))}
                 </select>
               </label>
-              <label className="checkbox-label" style={{ marginLeft: 'auto' }}>
+              <label className="checkbox-label bulk-featured-label">
                 <input
                   type="checkbox"
                   checked={bulkIsFeatured}
@@ -1486,19 +1486,23 @@ const HomepageSettings = () => {
           margin-bottom: 2rem;
         }
 
-        .settings-header h2 {
-          font-family: 'Outfit', sans-serif;
-          font-size: 2rem;
-          color: #1c1917;
-          margin-bottom: 0.5rem;
-        }
-
         .settings-tabs {
           display: flex;
-          gap: 1rem;
+          gap: 0.5rem;
           margin-bottom: 2rem;
           border-bottom: 1px solid #e7e5e4;
           padding-bottom: 0.5rem;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        .settings-tabs::-webkit-scrollbar {
+          height: 6px;
+        }
+        
+        .settings-tabs::-webkit-scrollbar-thumb {
+          background: #d6d3d1;
+          border-radius: 4px;
         }
 
         .settings-tabs button {
@@ -1513,6 +1517,7 @@ const HomepageSettings = () => {
           gap: 0.5rem;
           transition: all 0.2s ease;
           border-radius: 6px;
+          white-space: nowrap;
         }
 
         .settings-tabs button.active {
@@ -1531,7 +1536,9 @@ const HomepageSettings = () => {
         .section-title {
           display: flex;
           justify-content: space-between;
-          align-items: center;
+          align-items: flex-start;
+          flex-wrap: wrap;
+          gap: 1rem;
           margin-bottom: 2rem;
           border-bottom: 1px solid #f5f5f4;
           padding-bottom: 1rem;
@@ -1820,11 +1827,40 @@ const HomepageSettings = () => {
           .form-grid {
             grid-template-columns: 1fr;
           }
-          .form-grid label.wide, .check-group {
-            grid-column: span 1;
+          .form-grid label.wide, .check-group, .form-grid > div {
+            grid-column: span 1 !important;
           }
           .photos-grid {
             grid-template-columns: repeat(2, 1fr);
+          }
+          .settings-content-card {
+            padding: 1.25rem;
+          }
+          .settings-table-wrapper {
+            overflow-x: auto;
+          }
+          .bulk-options-row {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1rem;
+          }
+          .bulk-featured-label {
+            margin-left: 0;
+          }
+          .bulk-queue-header > div {
+            flex-wrap: wrap;
+            width: 100%;
+          }
+          .bulk-queue-header button {
+            flex: 1;
+          }
+          .sortable-item {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          .sortable-item .sort-arrows {
+            flex-direction: row;
+            margin-top: 0.5rem;
           }
         }
 
@@ -1921,10 +1957,16 @@ const HomepageSettings = () => {
           box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         }
 
+        .bulk-featured-label {
+          margin-left: auto;
+        }
+
         .bulk-queue-header {
           display: flex;
           align-items: center;
           justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 1rem;
           padding: 1rem 1.5rem;
           background: #f5f5f4;
           border-bottom: 1px solid #e7e5e4;

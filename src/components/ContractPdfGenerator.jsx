@@ -60,8 +60,8 @@ const sanitizeFileNamePart = (value, fallback = 'Cliente') => (
 export const generateContractPdf = async ({ submission, budgetId, businessSettings }) => {
   const doc = new jsPDF('p', 'mm', 'a4');
 
-  if (!submission?.budget_number) {
-    throw new Error('A real budget_number is required before generating a budget PDF.');
+  if (!submission?.budget_number && !submission?.id) {
+    console.warn('A budget_number or id is recommended before generating a budget PDF.');
   }
 
   // Package search - Clean up name for display
@@ -107,7 +107,7 @@ export const generateContractPdf = async ({ submission, budgetId, businessSettin
   // Helper for numbering (5 digits)
   const budgetNumber = submission.budget_number
     ? String(submission.budget_number).padStart(5, '0')
-    : String(submission.id?.slice(-5) || "00000").toUpperCase();
+    : String(submission.id || "00000").slice(-5).toUpperCase();
 
   const currentDate = new Date().toLocaleDateString('pt-BR');
 
@@ -462,8 +462,8 @@ export const generateContractPdf = async ({ submission, budgetId, businessSettin
 export const generateServiceContractPdf = async ({ submission, budgetId, businessSettings }) => {
   const doc = new jsPDF('p', 'mm', 'a4');
 
-  if (!submission?.budget_number) {
-    throw new Error('A real budget_number is required before generating a contract PDF.');
+  if (!submission?.budget_number && !submission?.id) {
+    console.warn('A budget_number or id is recommended before generating a contract PDF.');
   }
 
   const goldPrimary = [181, 164, 109];
@@ -479,7 +479,7 @@ export const generateServiceContractPdf = async ({ submission, budgetId, busines
 
   const budgetNumber = submission.budget_number
     ? String(submission.budget_number).padStart(5, '0')
-    : String(submission.id?.slice(-5) || "00000").toUpperCase();
+    : String(submission.id || "00000").slice(-5).toUpperCase();
 
   const currentDate = new Date().toLocaleDateString('pt-BR');
 
@@ -530,12 +530,13 @@ OBRIGAÇÕES E RESPONSABILIDADES
 A contratada se compromete a entregar o material no prazo estipulado e a contratante se compromete a garantir o acesso da equipe ao local do evento.
 `;
 
-  let rawText = businessSettings.contract_text || defaultContract;
+  let rawText = businessSettings?.contract_text || defaultContract;
 
   // Replace tags
-  rawText = rawText.replace(/\[CONTRATADA_NOME\]/g, businessSettings.company_name || 'Mayclick Photography');
-  rawText = rawText.replace(/\[CONTRATADA_CNPJ\]/g, businessSettings.cnpj || '___.___.___/____-__');
-  rawText = rawText.replace(/\[ENDERECO_CONTRATADA\]/g, businessSettings.address || 'Endereço não informado');
+  rawText = rawText.replace(/\[CONTRATADA_NOME\]/g, businessSettings?.company_name || 'Mayclick Photography');
+  rawText = rawText.replace(/\[CONTRATADA_CNPJ\]/g, businessSettings?.cnpj || '___.___.___/____-__');
+  rawText = rawText.replace(/\[ENDERECO_CONTRATADA\]/g, businessSettings?.address || 'Endereço não informado');
+
   
   const clientName = submission.contractor?.fullName || submission.client_name || "_______________";
   const clientCpf = submission.contractor?.cpf || submission.client_cpf || "___.___.___-__";
@@ -582,7 +583,7 @@ A contratada se compromete a entregar o material no prazo estipulado e a contrat
   doc.setFontSize(9);
   doc.text("CONTRATADA", margin, yPos + 5);
   doc.setFont("helvetica", "normal");
-  doc.text(businessSettings.company_name || 'Mayclick Photography', margin, yPos + 10);
+  doc.text(businessSettings?.company_name || 'Mayclick Photography', margin, yPos + 10);
   
   // Signature 2
   doc.line(pageWidth - margin - 70, yPos, pageWidth - margin, yPos);

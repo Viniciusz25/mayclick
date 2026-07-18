@@ -32,6 +32,7 @@ import {
 
 import DynamicStyles from './components/DynamicStyles';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
+import FloatingWhatsApp from './components/FloatingWhatsApp';
 
 const AdminLayout = ({ children, handleLogout }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -449,6 +450,7 @@ function App() {
       <Router>
         <DynamicStyles settings={businessSettings} />
         <ScrollToTop />
+        <FloatingWhatsApp />
         <ErrorBoundary>
           <Routes>
             {/* ROTAS PÚBLICAS */}

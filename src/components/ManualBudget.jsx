@@ -23,6 +23,15 @@ const roundMoney = (value) => Math.round((Number(value) || 0) * 100) / 100;
 
 
 
+const maskPhone = (value) => {
+  if (!value) return '';
+  let v = value.replace(/\D/g, '');
+  if (v.length > 11) v = v.slice(0, 11);
+  if (v.length > 2) v = `(${v.substring(0, 2)}) ${v.substring(2)}`;
+  if (v.length > 9) v = `${v.substring(0, 10)}-${v.substring(10)}`;
+  return v;
+};
+
 const normalizeDiscountType = (type) => (
   ['none', 'fixed', 'percentage'].includes(type) ? type : 'none'
 );
@@ -287,6 +296,9 @@ const ManualBudget = () => {
       return;
     }
 
+    const transportOption = (businessSettings?.pricing?.transport || []).find(t => Number(t.price) === toNumber(budget.transportValue));
+    const travelLabel = transportOption ? transportOption.name : 'Deslocamento';
+
     const submissionMock = {
       id: bId,
       budget_number: bNum,
@@ -310,7 +322,7 @@ const ManualBudget = () => {
       extraHoursCount: budget.extraHours,
       extraHourPrice: totals.extraHourPrice,
       transportValue: totals.travelTotal,
-      transportLabel: TRAVEL_LABEL,
+      transportLabel: travelLabel,
       subtotal: totals.subtotal,
       totalValue: totals.total,
       discountData: {
@@ -335,6 +347,9 @@ const ManualBudget = () => {
       if (saved || savedBudgetId) {
         await updateBudget(bId, { status: 'generated' });
       }
+
+      alert('PDF gerado com sucesso!');
+      navigate('/app/orcamentos');
     } catch (err) {
       console.error('[ManualBudget] Error generating PDF:', {
         status: err.status,
@@ -392,7 +407,7 @@ const ManualBudget = () => {
                   className="form-control"
                   placeholder="(00) 00000-0000"
                   value={budget.client.phone}
-                  onChange={e => setBudget({...budget, client: {...budget.client, phone: e.target.value}})}
+                  onChange={e => setBudget({...budget, client: {...budget.client, phone: maskPhone(e.target.value)}})}
                 />
               </div>
             </div>
