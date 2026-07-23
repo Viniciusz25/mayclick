@@ -100,12 +100,12 @@ const Home = () => {
                     opacity: index === currentSlide ? 1 : 0, 
                     transition: 'opacity 1.5s ease-in-out',
                     position: 'absolute',
-                    top: 0, left: 0, width: '100%', height: '100%', objectFit: 'contain', backgroundColor: '#050505'
+                    top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover'
                   }} 
                 />
               ))
             ) : (
-              <img src={s.hero_image_url || "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=2069&auto=format&fit=crop"} alt="Casal" style={{ width: '100%', height: '100%', objectFit: 'contain', backgroundColor: '#050505' }} />
+              <img src={s.hero_image_url || "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=2069&auto=format&fit=crop"} alt="Casal" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             )}
           </div>
           <div className="luxury-hero-overlay"></div>
