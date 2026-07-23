@@ -85,11 +85,11 @@ const PortfolioPage = () => {
                   e.currentTarget.style.borderColor = '#222';
                 }}
               >
-                <div style={{ height: '240px', overflow: 'hidden' }}>
+                <div style={{ height: '240px', overflow: 'hidden', backgroundColor: '#050505' }}>
                   <img 
                     src={cat.cover_image_url || 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=800&q=80'} 
                     alt={cat.title}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s' }}
+                    style={{ width: '100%', height: '100%', objectFit: 'contain', transition: 'transform 0.5s' }}
                     onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
                     onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
                   />

@@ -100,12 +100,12 @@ const Home = () => {
                     opacity: index === currentSlide ? 1 : 0, 
                     transition: 'opacity 1.5s ease-in-out',
                     position: 'absolute',
-                    top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover'
+                    top: 0, left: 0, width: '100%', height: '100%', objectFit: 'contain', backgroundColor: '#050505'
                   }} 
                 />
               ))
             ) : (
-              <img src={s.hero_image_url || "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=2069&auto=format&fit=crop"} alt="Casal" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <img src={s.hero_image_url || "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=2069&auto=format&fit=crop"} alt="Casal" style={{ width: '100%', height: '100%', objectFit: 'contain', backgroundColor: '#050505' }} />
             )}
           </div>
           <div className="luxury-hero-overlay"></div>
@@ -245,32 +245,9 @@ const Home = () => {
           </div>
         </section>
 
-        {/* STATS */}
-        <section className="luxury-stats">
-          <div className="luxury-stat-item">
-            <div className="luxury-stat-icon"><Camera size={32} /></div>
-            <div className="luxury-stat-value">+380</div>
-            <div className="luxury-stat-label">Eventos Registrados</div>
-            <div className="luxury-stat-desc">Casamentos • Debutantes • Infantis</div>
-          </div>
-          <div className="luxury-stat-item">
-            <div className="luxury-stat-icon"><Star size={32} /></div>
-            <div className="luxury-stat-value">+15 mil pessoas</div>
-            <div className="luxury-stat-label">Fotografadas</div>
-            <div className="luxury-stat-desc"></div>
-          </div>
-          <div className="luxury-stat-item">
-            <div className="luxury-stat-icon"><Heart size={32} /></div>
-            <div className="luxury-stat-value">10 anos</div>
-            <div className="luxury-stat-label">de Experiência</div>
-            <div className="luxury-stat-desc">realizando sonhos em historias eternizadas</div>
-          </div>
-          <div className="luxury-stat-item">
-            <div className="luxury-stat-icon"><Folder size={32} /></div>
-            <div className="luxury-stat-value">+120 mil</div>
-            <div className="luxury-stat-label">Fotos Entregues</div>
-            <div className="luxury-stat-desc">Editadas em alta resolução</div>
-          </div>
+        {/* PROMO BANNER */}
+        <section style={{ width: '100%', display: 'flex', justifyContent: 'center', backgroundColor: 'var(--bg-base)', padding: '2rem 0' }}>
+          <img src="/promo-banner.png" alt="Promo Banner" style={{ maxWidth: '100%', height: 'auto', display: 'block' }} />
         </section>
 
       </main>

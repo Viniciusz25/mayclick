@@ -17,12 +17,14 @@ import Agenda from './components/Agenda';
 import HomepageSettings from './components/HomepageSettings';
 import PortfolioPage from './components/PortfolioPage';
 import CategoryGallery from './components/CategoryGallery';
+import AlbumGallery from './components/AlbumGallery';
 import AboutPage from './components/AboutPage';
 import BlogPage from './components/BlogPage';
 import BlogPost from './components/BlogPost';
 import AdminBlog from './components/AdminBlog';
 import CadastroForm from './components/CadastroForm';
 import AdminHeroSettings from './components/AdminHeroSettings';
+import AdminPortfolio from './components/AdminPortfolio';
 import ScrollToTop from './components/ScrollToTop';
 import useSettings from './hooks/useSettings';
 import {
@@ -57,6 +59,7 @@ const AdminLayout = ({ children, handleLogout }) => {
     { path: '/app/agenda', label: 'Agenda', icon: <Calendar size={20} /> },
     { path: '/app/blog', label: 'Blog', icon: <FileText size={20} /> },
     { path: '/app/hero', label: 'Hero Principal', icon: <Star size={20} /> },
+    { path: '/app/portfolio', label: 'Portfólio', icon: <Camera size={20} /> },
     { path: '/app/configuracoes-pagina-inicial', label: 'Página Inicial', icon: <Globe size={20} /> },
     { path: '/app/configuracoes-negocio', label: 'Negócio', icon: <Settings size={20} /> },
     { path: '/app/configuracoes-conta', label: 'Minha Conta', icon: <User size={20} /> },
@@ -464,6 +467,7 @@ function App() {
             <Route path="/obrigado" element={<SuccessPage />} />
             <Route path="/portfolio" element={<PortfolioPage />} />
             <Route path="/portfolio/:slug" element={<CategoryGallery />} />
+            <Route path="/portfolio/:catSlug/:albumSlug" element={<AlbumGallery />} />
             <Route path="/blog" element={<BlogPage />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
 
@@ -486,6 +490,7 @@ function App() {
             <Route path="/app/respostas/:id" element={<PrivateRoute><SubmissionDetails /></PrivateRoute>} />
             <Route path="/app/blog" element={<PrivateRoute><AdminBlog /></PrivateRoute>} />
             <Route path="/app/hero" element={<PrivateRoute><AdminHeroSettings /></PrivateRoute>} />
+            <Route path="/app/portfolio" element={<PrivateRoute><AdminPortfolio /></PrivateRoute>} />
             <Route path="/app/configuracoes-pagina-inicial" element={<PrivateRoute><HomepageSettings /></PrivateRoute>} />
             <Route path="/app/configuracoes-negocio" element={<PrivateRoute><BusinessSettings /></PrivateRoute>} />
             <Route path="/app/configuracoes-conta" element={<PrivateRoute><AccountSettings /></PrivateRoute>} />

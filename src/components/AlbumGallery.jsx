@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { X, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
-import { getPublicCategoryGallery } from '../lib/apiClient';
+import { getPublicAlbumGallery } from '../lib/apiClient';
 import PublicFooter from './PublicFooter';
 import PublicHeader from './PublicHeader';
 import CookieBanner from './CookieBanner';
@@ -52,8 +52,8 @@ const Lightbox = ({ photos, index, onClose, onPrev, onNext }) => {
 };
 
 /* ─── Main Component ─── */
-const CategoryGallery = () => {
-  const { slug } = useParams();
+const AlbumGallery = () => {
+  const { catSlug, albumSlug } = useParams();
   const navigate = useNavigate();
 
   const [data, setData] = useState(null);
@@ -66,17 +66,17 @@ const CategoryGallery = () => {
     setLoading(true);
     setError('');
     setData(null);
-    getPublicCategoryGallery(slug)
+    getPublicAlbumGallery(catSlug, albumSlug)
       .then(setData)
       .catch((err) => {
-        if (err.status === 404) setError('Categoria não encontrada.');
+        if (err.status === 404) setError('Álbum não encontrado.');
         else setError('Não foi possível carregar esta galeria.');
       })
       .finally(() => setLoading(false));
-  }, [slug]);
+  }, [catSlug, albumSlug]);
 
   const photos = data?.photos || [];
-  const albums = data?.albums || [];
+  const album = data?.album || {};
   const category = data?.category || {};
   const allCategories = data?.allCategories || [];
 
@@ -86,7 +86,7 @@ const CategoryGallery = () => {
   const nextPhoto = () => setLightboxIndex(i => Math.min(photos.length - 1, i + 1));
 
   if (loading) {
-    return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#050505', color: 'var(--gold)' }}>Carregando Galeria...</div>;
+    return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#050505', color: 'var(--gold)' }}>Carregando Evento...</div>;
   }
 
   return (
@@ -96,11 +96,11 @@ const CategoryGallery = () => {
 
       <main className="luxury-inner-page" style={{ paddingTop: '75px' }}>
         
-        {/* Category Hero */}
+        {/* Album Hero */}
         <section style={{
           position: 'relative',
           minHeight: '300px',
-          backgroundImage: `url(${category.cover_url || 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1920&q=80'})`,
+          backgroundImage: `url(${album.cover_image_url || category.cover_url || 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1920&q=80'})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           display: 'flex',
@@ -110,7 +110,7 @@ const CategoryGallery = () => {
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(5,5,5,1) 0%, rgba(5,5,5,0.7) 50%, rgba(5,5,5,0.3) 100%)' }} />
           <div className="container" style={{ position: 'relative', zIndex: 1, paddingBottom: '3rem', paddingTop: '4rem', width: '100%' }}>
             <button 
-              onClick={() => navigate('/portfolio')}
+              onClick={() => navigate(`/portfolio/${category.slug}`)}
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
                 background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
@@ -118,16 +118,13 @@ const CategoryGallery = () => {
                 fontSize: '0.85rem', cursor: 'pointer', marginBottom: '1.5rem'
               }}
             >
-              <ArrowLeft size={16} /> Voltar ao Portfólio
+              <ArrowLeft size={16} /> Voltar para {category.title || 'Categoria'}
             </button>
-            <h1 className="serif-title" style={{ fontSize: '3.5rem', color: '#fff', marginBottom: '1rem' }}>{category.title || 'Galeria'}</h1>
-            {category.description && (
-              <p style={{ color: '#ccc', maxWidth: '600px', fontSize: '1.1rem', lineHeight: 1.6 }}>{category.description}</p>
-            )}
+            <h1 className="serif-title" style={{ fontSize: '3.5rem', color: '#fff', marginBottom: '1rem' }}>{album.title || 'Evento'}</h1>
           </div>
         </section>
 
-        {/* Tab Bar */}
+        {/* Tab Bar (Category Nav) */}
         <div style={{ background: '#0a0a0a', borderBottom: '1px solid #222', position: 'sticky', top: 0, zIndex: 90 }}>
           <div className="container" style={{ display: 'flex', gap: '1rem', overflowX: 'auto', padding: '1rem 2rem', scrollbarWidth: 'none' }}>
             <button 
@@ -142,9 +139,9 @@ const CategoryGallery = () => {
                 key={c.id}
                 onClick={() => navigate(`/portfolio/${c.slug}`)}
                 style={{
-                  background: c.slug === slug ? 'rgba(197, 160, 89, 0.1)' : 'none',
-                  border: `1px solid ${c.slug === slug ? 'var(--gold)' : 'transparent'}`,
-                  color: c.slug === slug ? 'var(--gold)' : '#888',
+                  background: c.slug === catSlug ? 'rgba(197, 160, 89, 0.1)' : 'none',
+                  border: `1px solid ${c.slug === catSlug ? 'var(--gold)' : 'transparent'}`,
+                  color: c.slug === catSlug ? 'var(--gold)' : '#888',
                   borderRadius: '4px', cursor: 'pointer', fontSize: '0.9rem', padding: '0.5rem 1rem', whiteSpace: 'nowrap',
                   transition: 'all 0.3s'
                 }}
@@ -159,60 +156,11 @@ const CategoryGallery = () => {
         <section className="container" style={{ padding: '4rem 2rem' }}>
           {error && <div style={{ color: '#ff6b6b', textAlign: 'center' }}>{error}</div>}
           
-          {!loading && !error && photos.length === 0 && albums.length === 0 && (
-            <div style={{ textAlign: 'center', color: '#888', padding: '4rem 0' }}>Nenhuma foto ou evento nesta galeria.</div>
+          {!loading && !error && photos.length === 0 && (
+            <div style={{ textAlign: 'center', color: '#888', padding: '4rem 0' }}>Nenhuma foto adicionada neste evento.</div>
           )}
 
-          {albums.length > 0 && (
-            <>
-              <h2 className="serif-title" style={{ fontSize: '2rem', marginBottom: '1.5rem', color: '#fff' }}>Eventos</h2>
-              <div style={{ columns: window.innerWidth > 992 ? 3 : window.innerWidth > 768 ? 2 : 1, columnGap: '1rem', marginBottom: '4rem' }}>
-                {albums.map((album) => (
-                  <Link 
-                    to={`/portfolio/${category.slug}/${album.slug}`}
-                    key={album.id}
-                    style={{
-                      breakInside: 'avoid', marginBottom: '1rem', cursor: 'pointer',
-                      position: 'relative', borderRadius: '4px', overflow: 'hidden',
-                      display: 'block', textDecoration: 'none'
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.querySelector('.album-hover').style.opacity = 1;
-                      e.currentTarget.querySelector('img').style.transform = 'scale(1.05)';
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.querySelector('.album-hover').style.opacity = 0;
-                      e.currentTarget.querySelector('img').style.transform = 'scale(1)';
-                    }}
-                  >
-                    <img 
-                      src={album.cover_image_url || category.cover_url || 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc'} 
-                      alt={album.title} 
-                      style={{ width: '100%', height: 'auto', display: 'block', transition: 'transform 0.5s' }}
-                    />
-                    <div 
-                      className="album-hover"
-                      style={{
-                        position: 'absolute', inset: 0,
-                        background: 'rgba(0,0,0,0.6)',
-                        opacity: 0, transition: 'opacity 0.3s',
-                        display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '1.5rem',
-                        color: '#fff'
-                      }}
-                    >
-                      <h4 style={{ margin: 0, fontSize: '1.25rem', color: '#fff' }}>{album.title}</h4>
-                      <span style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: 'var(--gold)', border: '1px solid var(--gold)', padding: '0.2rem 0.8rem', borderRadius: '4px' }}>Ver Evento</span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </>
-          )}
-
-          {photos.length > 0 && (
-            <>
-              {albums.length > 0 && <h2 className="serif-title" style={{ fontSize: '2rem', marginBottom: '1.5rem', color: '#fff' }}>Mais Fotos</h2>}
-              <div style={{ columns: window.innerWidth > 992 ? 4 : window.innerWidth > 768 ? 3 : 2, columnGap: '1rem' }}>
+          <div style={{ columns: window.innerWidth > 992 ? 4 : window.innerWidth > 768 ? 3 : 2, columnGap: '1rem' }}>
             {photos.map((photo, idx) => (
               <div 
                 key={photo.id}
@@ -245,8 +193,6 @@ const CategoryGallery = () => {
               </div>
             ))}
           </div>
-          </>
-          )}
         </section>
 
       </main>
@@ -291,4 +237,4 @@ const CategoryGallery = () => {
   );
 };
 
-export default CategoryGallery;
+export default AlbumGallery;

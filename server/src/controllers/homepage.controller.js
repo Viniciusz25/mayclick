@@ -212,7 +212,7 @@ export const reorderPortfolioPhotos = async (req, res) => {
     await client.query('BEGIN');
     for (const { id, sort_order } of items) {
       await client.query(
-        'UPDATE portfolio_photos SET sort_order = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
+        'UPDATE portfolio_photos SET sort_order = $1 WHERE id = $2',
         [sort_order, id]
       );
     }
@@ -221,6 +221,87 @@ export const reorderPortfolioPhotos = async (req, res) => {
   } catch (error) {
     await client.query('ROLLBACK');
     console.error('Error reordering photos:', sanitizeError(error));
+    res.status(500).json({ message: 'Internal server error.' });
+  } finally {
+    client.release();
+  }
+};
+
+// PORTFOLIO ALBUMS
+export const getPortfolioAlbums = async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM portfolio_albums ORDER BY sort_order ASC, created_at DESC');
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error fetching albums:', sanitizeError(error));
+    res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
+export const createPortfolioAlbum = async (req, res) => {
+  const { category_id, title, slug, cover_image_url, sort_order, active } = req.body;
+  if (!category_id || !title || !slug) return res.status(400).json({ message: 'category_id, title and slug are required.' });
+  try {
+    const result = await pool.query(
+      `INSERT INTO portfolio_albums (category_id, title, slug, cover_image_url, sort_order, active)
+       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
+      [category_id, title, slug, cover_image_url || null, sort_order || 0, active ?? true]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.error('Error creating album:', sanitizeError(error));
+    if (error.code === '23505') return res.status(400).json({ message: 'Slug already in use.' });
+    res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
+export const updatePortfolioAlbum = async (req, res) => {
+  const { id } = req.params;
+  const { category_id, title, slug, cover_image_url, sort_order, active } = req.body;
+  try {
+    const result = await pool.query(
+      `UPDATE portfolio_albums 
+       SET category_id = $1, title = $2, slug = $3, cover_image_url = $4, sort_order = $5, active = $6, updated_at = CURRENT_TIMESTAMP
+       WHERE id = $7 RETURNING *`,
+      [category_id, title, slug, cover_image_url, sort_order, active, id]
+    );
+    if (result.rowCount === 0) return res.status(404).json({ message: 'Album not found.' });
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error updating album:', sanitizeError(error));
+    if (error.code === '23505') return res.status(400).json({ message: 'Slug already in use.' });
+    res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
+export const deletePortfolioAlbum = async (req, res) => {
+  try {
+    const result = await pool.query('DELETE FROM portfolio_albums WHERE id = $1', [req.params.id]);
+    if (result.rowCount === 0) return res.status(404).json({ message: 'Album not found.' });
+    res.json({ message: 'Album deleted successfully.' });
+  } catch (error) {
+    console.error('Error deleting album:', sanitizeError(error));
+    res.status(500).json({ message: 'Internal server error.' });
+  }
+};
+
+export const reorderPortfolioAlbums = async (req, res) => {
+  const items = req.body;
+  if (!Array.isArray(items) || items.length === 0) return res.status(400).json({ message: 'items array is required.' });
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    for (const { id, sort_order } of items) {
+      await client.query(
+        'UPDATE portfolio_albums SET sort_order = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
+        [sort_order, id]
+      );
+    }
+    await client.query('COMMIT');
+    res.json({ message: 'Order updated successfully.', count: items.length });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error reordering albums:', sanitizeError(error));
     res.status(500).json({ message: 'Internal server error.' });
   } finally {
     client.release();
@@ -239,12 +320,12 @@ export const getPortfolioPhotos = async (req, res) => {
 };
 
 export const createPortfolioPhoto = async (req, res) => {
-  const { category_id, image_url, is_cover, is_featured_home, active, sort_order, title, description } = req.body;
+  const { category_id, album_id, image_url, is_cover, is_featured_home, active, sort_order, title, description } = req.body;
   try {
     const result = await pool.query(
-      `INSERT INTO portfolio_photos (category_id, image_url, is_cover, is_featured_home, active, sort_order, title, description)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
-      [category_id || null, image_url, is_cover ?? false, is_featured_home ?? false, active ?? true, sort_order ?? 0, title || null, description || null]
+      `INSERT INTO portfolio_photos (category_id, album_id, image_url, is_cover, is_featured_home, active, sort_order, title, description)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
+      [category_id || null, album_id || null, image_url, is_cover ?? false, is_featured_home ?? false, active ?? true, sort_order ?? 0, title || null, description || null]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -255,13 +336,13 @@ export const createPortfolioPhoto = async (req, res) => {
 
 export const updatePortfolioPhoto = async (req, res) => {
   const { id } = req.params;
-  const { category_id, image_url, is_cover, is_featured_home, active, sort_order, title, description } = req.body;
+  const { category_id, album_id, image_url, is_cover, is_featured_home, active, sort_order, title, description } = req.body;
   try {
     const result = await pool.query(
-      `UPDATE portfolio_photos SET category_id = $1, image_url = $2, is_cover = $3, 
-       is_featured_home = $4, active = $5, sort_order = $6, title = $7, description = $8
-       WHERE id = $9 RETURNING *`,
-      [category_id || null, image_url, is_cover, is_featured_home, active, sort_order, title || null, description || null, id]
+      `UPDATE portfolio_photos 
+       SET category_id = $1, album_id = $2, image_url = $3, is_cover = $4, is_featured_home = $5, active = $6, sort_order = $7, title = $8, description = $9
+       WHERE id = $10 RETURNING *`,
+      [category_id || null, album_id || null, image_url, is_cover, is_featured_home, active, sort_order, title || null, description || null, id]
     );
     if (result.rowCount === 0) return res.status(404).json({ message: 'Photo not found.' });
     res.json(result.rows[0]);

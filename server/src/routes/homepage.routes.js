@@ -4,6 +4,7 @@ import {
   getPortfolioCategories, createPortfolioCategory, updatePortfolioCategory, deletePortfolioCategory,
   reorderCategories,
   getPortfolioPhotos, createPortfolioPhoto, updatePortfolioPhoto, deletePortfolioPhoto, reorderPortfolioPhotos,
+  getPortfolioAlbums, createPortfolioAlbum, updatePortfolioAlbum, deletePortfolioAlbum, reorderPortfolioAlbums,
   getHomeHighlights, createHomeHighlight, updateHomeHighlight, deleteHomeHighlight
 } from '../controllers/homepage.controller.js';
 import { authenticateToken } from '../middleware/auth.middleware.js';
@@ -24,6 +25,13 @@ router.post('/categories', createPortfolioCategory);
 router.patch('/categories/reorder', reorderCategories);
 router.put('/categories/:id', updatePortfolioCategory);
 router.delete('/categories/:id', deletePortfolioCategory);
+
+// Albums
+router.get('/albums', getPortfolioAlbums);
+router.post('/albums', createPortfolioAlbum);
+router.patch('/albums/reorder', reorderPortfolioAlbums);
+router.put('/albums/:id', updatePortfolioAlbum);
+router.delete('/albums/:id', deletePortfolioAlbum);
 
 // Photos
 router.get('/photos', getPortfolioPhotos);

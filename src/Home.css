@@ -125,7 +125,8 @@
 .luxury-hero-bg img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
+  background-color: #050505;
   object-position: center 20%;
 }
 .luxury-hero-overlay {
@@ -442,11 +443,12 @@
   border-radius: 4px;
   overflow: hidden;
   flex-shrink: 0;
+  background-color: #050505;
 }
 .luxury-portfolio-item img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   transition: transform 0.5s;
 }
 .luxury-portfolio-item:hover img {
@@ -608,7 +610,8 @@
 .luxury-blog-card-image {
   width: 100%;
   height: 220px;
-  object-fit: cover;
+  object-fit: contain;
+  background-color: #050505;
 }
 .luxury-blog-card-content {
   padding: 1.5rem;
@@ -685,7 +688,8 @@
 .luxury-blog-post-image {
   width: 100%;
   max-height: 500px;
-  object-fit: cover;
+  object-fit: contain;
+  background-color: #050505;
   border-radius: 4px;
   margin-bottom: 3rem;
 }

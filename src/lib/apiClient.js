@@ -494,6 +494,12 @@ export const deletePortfolioCategory = (id) => apiFetch(`/admin/homepage/categor
 export const reorderCategories = (items) => apiFetch('/admin/homepage/categories/reorder', { method: 'PATCH', body: JSON.stringify(items) });
 export const reorderPortfolioPhotos = (items) => apiFetch('/admin/homepage/photos/reorder', { method: 'PATCH', body: JSON.stringify(items) });
 
+export const getPortfolioAlbums = () => apiFetch('/admin/homepage/albums');
+export const createPortfolioAlbum = (data) => apiFetch('/admin/homepage/albums', { method: 'POST', body: JSON.stringify(data) });
+export const updatePortfolioAlbum = (id, data) => apiFetch(`/admin/homepage/albums/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+export const deletePortfolioAlbum = (id) => apiFetch(`/admin/homepage/albums/${id}`, { method: 'DELETE' });
+export const reorderPortfolioAlbums = (items) => apiFetch('/admin/homepage/albums/reorder', { method: 'PATCH', body: JSON.stringify(items) });
+
 export const getPortfolioPhotos = () => apiFetch('/admin/homepage/photos');
 export const createPortfolioPhoto = (data) => apiFetch('/admin/homepage/photos', { method: 'POST', body: JSON.stringify(data) });
 export const updatePortfolioPhoto = (id, data) => apiFetch(`/admin/homepage/photos/${id}`, { method: 'PUT', body: JSON.stringify(data) });
@@ -511,6 +517,7 @@ export const getPublicHomeData = () => apiFetch('/public/home-data');
 // PUBLIC PORTFOLIO
 export const getPublicPortfolio = () => apiFetch('/public/portfolio');
 export const getPublicCategoryGallery = (slug) => apiFetch(`/public/portfolio/${slug}`);
+export const getPublicAlbumGallery = (catSlug, albumSlug) => apiFetch(`/public/portfolio/${catSlug}/${albumSlug}`);
 
 // BLOG API
 export const getBlogPosts = () => apiFetch('/blog');

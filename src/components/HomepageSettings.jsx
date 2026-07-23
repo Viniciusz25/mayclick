@@ -806,6 +806,36 @@ const HomepageSettings = () => {
         )}
 
         {activeTab === 'portfolio' && (
+          <div style={{ padding: '2rem', textAlign: 'center', backgroundColor: 'var(--bg-page)', borderRadius: '8px', border: '1px solid var(--border)' }}>
+            <Camera size={48} style={{ color: 'var(--accent)', margin: '0 auto 1rem' }} />
+            <h3 style={{ marginBottom: '1rem' }}>Gerenciador de Portfólio Atualizado</h3>
+            <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
+              A gestão de categorias, eventos e fotos do portfólio agora possui uma página exclusiva para facilitar a organização.
+            </p>
+            <button className="btn btn-primary" onClick={() => window.location.href = '/app/portfolio'}>
+              Acessar Gerenciador de Portfólio
+            </button>
+          </div>
+        )}
+
+        {activeTab === 'photos' && (
+          <div style={{ padding: '2rem', textAlign: 'center', backgroundColor: 'var(--bg-page)', borderRadius: '8px', border: '1px solid var(--border)' }}>
+            <Image size={48} style={{ color: 'var(--accent)', margin: '0 auto 1rem' }} />
+            <h3 style={{ marginBottom: '1rem' }}>Gerenciador de Fotos Atualizado</h3>
+            <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
+              O envio e organização de fotos agora é feito diretamente na página exclusiva de Portfólio.
+            </p>
+            <button className="btn btn-primary" onClick={() => window.location.href = '/app/portfolio'}>
+              Acessar Gerenciador de Portfólio
+            </button>
+          </div>
+        )}
+
+        {/* 
+          Ocultando o código antigo de portfolio e photos, mantido aqui apenas se precisar reverter (mas não será renderizado)
+          ... 
+        */}
+        {false && activeTab === 'portfolio' && (
           <div>
             <div className="section-title">
               <h3>Gerenciar Categorias de Portfólio</h3>
@@ -989,7 +1019,7 @@ const HomepageSettings = () => {
           </div>
         )}
 
-        {activeTab === 'photos' && (
+        {false && activeTab === 'photos' && (
           <div>
             {/* ===== BULK UPLOAD SECTION ===== */}
             <div className="section-title">
