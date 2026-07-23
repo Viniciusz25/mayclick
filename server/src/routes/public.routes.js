@@ -18,7 +18,7 @@ router.get('/carousel', getPublicCarouselSlides);
 router.get('/portfolio', async (req, res) => {
   try {
     const cats = await pool.query(
-      'SELECT * FROM portfolio_categories WHERE active = TRUE ORDER BY sort_order ASC, created_at DESC'
+      'SELECT * FROM portfolio_categories WHERE active = TRUE AND (is_hidden_from_portfolio = FALSE OR is_hidden_from_portfolio IS NULL) ORDER BY sort_order ASC, created_at DESC'
     );
     // Attach photo count to each category
     const catIds = cats.rows.map(c => c.id);

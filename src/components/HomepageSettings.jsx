@@ -492,31 +492,12 @@ const HomepageSettings = () => {
                 />
               </label>
 
-              <div style={{ gridColumn: 'span 2' }}>
-                <ImageUploader
-                  label="Imagem de Fundo Fixa do Banner (Hero)"
-                  value={settings.hero_image_url || ''}
-                  onChange={(url) => setSettings({ ...settings, hero_image_url: url })}
-                  placeholder="Usada se não houver carrossel"
-                />
-              </div>
-
-              <div style={{ gridColumn: 'span 2', marginTop: '1rem' }}>
-                <label>
-                  <strong>Carrossel Animado de Fotos (Opcional)</strong>
-                  <p style={{ fontSize: '0.85rem', color: '#78716c', marginBottom: '0.5rem', fontWeight: 'normal' }}>
-                    Selecione uma categoria de portfólio. As fotos dessa categoria passarão automaticamente no fundo do Banner.
-                  </p>
-                  <select
-                    value={settings.hero_carousel_category_slug || ''}
-                    onChange={(e) => setSettings({ ...settings, hero_carousel_category_slug: e.target.value })}
-                  >
-                    <option value="">Nenhum (Usar Imagem Fixa acima)</option>
-                    {categories.map(c => (
-                      <option key={c.id} value={c.slug}>{c.title}</option>
-                    ))}
-                  </select>
-                </label>
+              <div style={{ gridColumn: 'span 2', marginTop: '1rem', padding: '1rem', backgroundColor: 'var(--bg-page)', borderRadius: '8px', border: '1px solid var(--border)' }}>
+                <p style={{ color: 'var(--accent)', fontWeight: 'bold', marginBottom: '0.5rem' }}>✨ Novo Gerenciador de Hero</p>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                  A imagem de fundo e o carrossel animado agora são configurados em uma área exclusiva. 
+                  Acesse <strong>"Hero Principal"</strong> no menu lateral para gerenciar as fotos do topo do seu site.
+                </p>
               </div>
             </div>
 

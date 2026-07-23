@@ -129,12 +129,12 @@ export const getPortfolioCategories = async (req, res) => {
 };
 
 export const createPortfolioCategory = async (req, res) => {
-  const { slug, title, description, cover_image_url, active, sort_order } = req.body;
+  const { slug, title, description, cover_image_url, active, sort_order, is_hidden_from_portfolio } = req.body;
   try {
     const result = await pool.query(
-      `INSERT INTO portfolio_categories (slug, title, description, cover_image_url, active, sort_order)
-       VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-      [slug, title, description, cover_image_url, active ?? true, sort_order ?? 0]
+      `INSERT INTO portfolio_categories (slug, title, description, cover_image_url, active, sort_order, is_hidden_from_portfolio)
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [slug, title, description, cover_image_url, active ?? true, sort_order ?? 0, is_hidden_from_portfolio ?? false]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -145,13 +145,13 @@ export const createPortfolioCategory = async (req, res) => {
 
 export const updatePortfolioCategory = async (req, res) => {
   const { id } = req.params;
-  const { slug, title, description, cover_image_url, active, sort_order } = req.body;
+  const { slug, title, description, cover_image_url, active, sort_order, is_hidden_from_portfolio } = req.body;
   try {
     const result = await pool.query(
       `UPDATE portfolio_categories SET slug = $1, title = $2, description = $3, 
-       cover_image_url = $4, active = $5, sort_order = $6, updated_at = CURRENT_TIMESTAMP
-       WHERE id = $7 RETURNING *`,
-      [slug, title, description, cover_image_url, active, sort_order, id]
+       cover_image_url = $4, active = $5, sort_order = $6, is_hidden_from_portfolio = $7, updated_at = CURRENT_TIMESTAMP
+       WHERE id = $8 RETURNING *`,
+      [slug, title, description, cover_image_url, active, sort_order, is_hidden_from_portfolio ?? false, id]
     );
     if (result.rowCount === 0) return res.status(404).json({ message: 'Category not found.' });
     res.json(result.rows[0]);
@@ -264,7 +264,7 @@ export const getPublicHomeData = async (req, res) => {
     const settings = settingsRes.rows[0] || {};
 
     const testimonialsRes = await pool.query('SELECT * FROM testimonials WHERE active = TRUE ORDER BY sort_order ASC, created_at DESC');
-    const categoriesRes = await pool.query('SELECT * FROM portfolio_categories WHERE active = TRUE ORDER BY sort_order ASC, created_at DESC');
+    const categoriesRes = await pool.query('SELECT * FROM portfolio_categories WHERE active = TRUE AND (is_hidden_from_portfolio = FALSE OR is_hidden_from_portfolio IS NULL) ORDER BY sort_order ASC, created_at DESC');
     const featuredPhotosRes = await pool.query('SELECT * FROM portfolio_photos WHERE active = TRUE AND is_featured_home = TRUE ORDER BY sort_order ASC, created_at DESC');
     const highlightsRes = await pool.query('SELECT * FROM home_highlights WHERE active = TRUE ORDER BY sort_order ASC, created_at DESC');
 
