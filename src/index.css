@@ -41,6 +41,28 @@
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* React Quill Overrides for Admin Theme */
+.ql-toolbar.ql-snow {
+  border: none !important;
+  border-bottom: 1px solid var(--border-strong) !important;
+  background-color: var(--bg-page) !important;
+  font-family: inherit !important;
+}
+.ql-container.ql-snow {
+  border: none !important;
+  font-family: inherit !important;
+  font-size: 1rem !important;
+}
+.ql-editor {
+  color: var(--text-main) !important;
+  min-height: 500px;
+}
+.ql-editor img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+}
+
 [data-theme='dark'] {
   --bg-page: #121212;      /* Cinza Chumbo */
   --bg-surface: #1E1E1E;
