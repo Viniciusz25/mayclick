@@ -100,7 +100,7 @@ const CategoryGallery = () => {
         <section style={{
           position: 'relative',
           minHeight: '300px',
-          backgroundImage: `url(${category.cover_url || 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1920&q=80'})`,
+          backgroundImage: `url(${category.cover_image_url || 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1920&q=80'})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           display: 'flex',

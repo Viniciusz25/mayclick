@@ -297,8 +297,8 @@ const AdminPortfolio = () => {
             {currentPhotos.map((p, index) => (
               <div 
                 key={p.id} 
-                className="relative border-radius overflow-hidden shadow-sm" 
-                style={{ height: '120px', border: '1px solid var(--border)', cursor: 'grab' }}
+                className="border-radius overflow-hidden shadow-sm" 
+                style={{ position: 'relative', height: '120px', border: '1px solid var(--border)', cursor: 'grab' }}
                 draggable
                 onDragStart={() => (dragItem.current = index)}
                 onDragEnter={() => (dragOverItem.current = index)}
@@ -307,7 +307,19 @@ const AdminPortfolio = () => {
               >
                 <img src={p.image_url} alt="Foto" style={{ width: '100%', height: '100%', objectFit: 'cover' }} draggable={false} />
                 <button 
-                  className="absolute top-1 right-1 p-1 bg-red text-white border-radius shadow-sm hover:scale-110 transition"
+                  style={{
+                    position: 'absolute',
+                    top: '0.25rem',
+                    right: '0.25rem',
+                    padding: '0.25rem',
+                    backgroundColor: 'var(--danger, #ef4444)',
+                    color: '#fff',
+                    borderRadius: '4px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    zIndex: 10,
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.2)'
+                  }}
                   onClick={(e) => { e.stopPropagation(); handleDeletePhoto(p.id); }}
                 >
                   <Trash2 size={12} />
