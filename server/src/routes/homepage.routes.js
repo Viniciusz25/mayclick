@@ -3,7 +3,7 @@ import {
   getTestimonials, createTestimonial, updateTestimonial, deleteTestimonial,
   getPortfolioCategories, createPortfolioCategory, updatePortfolioCategory, deletePortfolioCategory,
   reorderCategories,
-  getPortfolioPhotos, createPortfolioPhoto, updatePortfolioPhoto, deletePortfolioPhoto,
+  getPortfolioPhotos, createPortfolioPhoto, updatePortfolioPhoto, deletePortfolioPhoto, reorderPortfolioPhotos,
   getHomeHighlights, createHomeHighlight, updateHomeHighlight, deleteHomeHighlight
 } from '../controllers/homepage.controller.js';
 import { authenticateToken } from '../middleware/auth.middleware.js';
@@ -28,6 +28,7 @@ router.delete('/categories/:id', deletePortfolioCategory);
 // Photos
 router.get('/photos', getPortfolioPhotos);
 router.post('/photos', createPortfolioPhoto);
+router.patch('/photos/reorder', reorderPortfolioPhotos);
 router.put('/photos/:id', updatePortfolioPhoto);
 router.delete('/photos/:id', deletePortfolioPhoto);
 

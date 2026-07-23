@@ -201,6 +201,32 @@ export const reorderCategories = async (req, res) => {
   }
 };
 
+// Bulk reorder photos
+export const reorderPortfolioPhotos = async (req, res) => {
+  const items = req.body;
+  if (!Array.isArray(items) || items.length === 0) {
+    return res.status(400).json({ message: 'items array is required.' });
+  }
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    for (const { id, sort_order } of items) {
+      await client.query(
+        'UPDATE portfolio_photos SET sort_order = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
+        [sort_order, id]
+      );
+    }
+    await client.query('COMMIT');
+    res.json({ message: 'Order updated successfully.', count: items.length });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error reordering photos:', sanitizeError(error));
+    res.status(500).json({ message: 'Internal server error.' });
+  } finally {
+    client.release();
+  }
+};
+
 // PORTFOLIO PHOTOS
 export const getPortfolioPhotos = async (req, res) => {
   try {

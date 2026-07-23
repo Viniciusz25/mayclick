@@ -492,6 +492,7 @@ export const updatePortfolioCategory = (id, data) => apiFetch(`/admin/homepage/c
 export const deletePortfolioCategory = (id) => apiFetch(`/admin/homepage/categories/${id}`, { method: 'DELETE' });
 // items: [{id, sort_order}]
 export const reorderCategories = (items) => apiFetch('/admin/homepage/categories/reorder', { method: 'PATCH', body: JSON.stringify(items) });
+export const reorderPortfolioPhotos = (items) => apiFetch('/admin/homepage/photos/reorder', { method: 'PATCH', body: JSON.stringify(items) });
 
 export const getPortfolioPhotos = () => apiFetch('/admin/homepage/photos');
 export const createPortfolioPhoto = (data) => apiFetch('/admin/homepage/photos', { method: 'POST', body: JSON.stringify(data) });

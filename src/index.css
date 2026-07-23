@@ -310,3 +310,133 @@ label {
 .detail-item.span-2, .detail-item[style*="span 2"] {
   grid-column: 1 / -1;
 }
+
+/* --- ImageUploader --- */
+.image-uploader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.image-uploader-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #44403c;
+}
+
+.image-uploader-tabs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.uploader-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid #d6d3d1;
+  border-radius: 6px;
+  background: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #78716c;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.uploader-tab.active {
+  background: #d4af37;
+  border-color: #d4af37;
+  color: #fff;
+}
+
+.image-uploader-url-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.image-uploader-input {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d6d3d1;
+  border-radius: 8px;
+  outline: none;
+  font-size: 0.95rem;
+  transition: border-color 0.2s;
+  font-family: inherit;
+}
+
+.image-uploader-input:focus {
+  border-color: #d4af37;
+}
+
+.image-drop-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  border: 2px dashed #d6d3d1;
+  border-radius: 10px;
+  cursor: pointer;
+  color: #78716c;
+  font-size: 0.875rem;
+  text-align: center;
+  transition: border-color 0.2s, background 0.2s;
+  background: #fafaf9;
+}
+
+.image-drop-zone:hover {
+  border-color: #d4af37;
+  background: #fffdf0;
+  color: #a88e28;
+}
+
+.drop-zone-uploading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #d4af37;
+  font-weight: 600;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinning { animation: spin 1s linear infinite; }
+
+.image-uploader-error {
+  font-size: 0.8rem;
+  color: #ef4444;
+  font-weight: 600;
+}
+
+.image-uploader-preview {
+  position: relative;
+  display: inline-block;
+  max-width: 200px;
+}
+
+.image-uploader-preview img {
+  width: 200px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #e7e5e4;
+  display: block;
+}
+
+.preview-clear {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Save, Plus, Trash2, Image as ImageIcon, Star } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Save, Plus, Trash2, Image as ImageIcon, Star, Upload, Loader, Move } from 'lucide-react';
 import { 
   getBusinessSettings, 
   updateBusinessSettings,
@@ -7,7 +7,9 @@ import {
   createPortfolioCategory,
   getPortfolioPhotos,
   createPortfolioPhoto,
-  deletePortfolioPhoto
+  deletePortfolioPhoto,
+  uploadImagesBulk,
+  reorderPortfolioPhotos
 } from '../lib/apiClient';
 import ImageUploader from './ImageUploader';
 
@@ -17,7 +19,12 @@ const AdminHeroSettings = () => {
   const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [newPhotoUrl, setNewPhotoUrl] = useState('');
+  
+  const fileInputRef = useRef(null);
+  const [uploadingBulk, setUploadingBulk] = useState(false);
+
+  const dragItem = useRef(null);
+  const dragOverItem = useRef(null);
 
   useEffect(() => {
     fetchData();
@@ -32,7 +39,8 @@ const AdminHeroSettings = () => {
       ]);
       setSettings(s);
       setCategories(c);
-      setPhotos(p);
+      // Ensure photos are sorted by sort_order
+      setPhotos(p.sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0)));
     } catch (err) {
       console.error('Error fetching hero data:', err);
     } finally {
@@ -76,20 +84,31 @@ const AdminHeroSettings = () => {
   const selectedCategory = categories.find(c => c.slug === settings.hero_carousel_category_slug);
   const selectedPhotos = selectedCategory ? photos.filter(p => p.category_id === selectedCategory.id) : [];
 
-  const handleAddPhoto = async () => {
-    if (!newPhotoUrl || !selectedCategory) return;
+  const handleBulkUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length || !selectedCategory) return;
+    setUploadingBulk(true);
     try {
-      const created = await createPortfolioPhoto({
-        category_id: selectedCategory.id,
-        image_url: newPhotoUrl,
-        active: true,
-        is_cover: false,
-        is_featured_home: false
-      });
-      setPhotos([created, ...photos]);
-      setNewPhotoUrl('');
+      const result = await uploadImagesBulk(files);
+      const uploadedUrls = result.uploaded.map(u => u.url);
+      
+      const newPhotos = [];
+      for (const url of uploadedUrls) {
+        const created = await createPortfolioPhoto({
+          category_id: selectedCategory.id,
+          image_url: url,
+          active: true,
+          is_cover: false,
+          is_featured_home: false
+        });
+        newPhotos.push(created);
+      }
+      setPhotos([...photos, ...newPhotos]);
     } catch (err) {
-      alert('Erro ao adicionar foto.');
+      alert('Erro ao fazer upload das imagens.');
+    } finally {
+      setUploadingBulk(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -100,6 +119,29 @@ const AdminHeroSettings = () => {
       setPhotos(photos.filter(p => p.id !== id));
     } catch (err) {
       alert('Erro ao excluir foto.');
+    }
+  };
+
+  const handleSort = async () => {
+    let _selectedPhotos = [...selectedPhotos];
+    const draggedItemContent = _selectedPhotos.splice(dragItem.current, 1)[0];
+    _selectedPhotos.splice(dragOverItem.current, 0, draggedItemContent);
+
+    dragItem.current = null;
+    dragOverItem.current = null;
+
+    const otherPhotos = photos.filter(p => p.category_id !== selectedCategory.id);
+    
+    // Update local state immediately
+    const withOrder = _selectedPhotos.map((c, i) => ({ ...c, sort_order: i }));
+    setPhotos([...otherPhotos, ...withOrder]);
+
+    // Save to DB
+    try {
+      const payload = withOrder.map(c => ({ id: c.id, sort_order: c.sort_order }));
+      await reorderPortfolioPhotos(payload);
+    } catch (err) {
+      alert('Erro ao salvar nova ordem das fotos.');
     }
   };
 
@@ -169,34 +211,77 @@ const AdminHeroSettings = () => {
 
       {selectedCategory && (
         <section className="card">
-          <h2 className="section-title">Fotos da Categoria Selecionada: {selectedCategory.title}</h2>
+          <h2 className="section-title">Fotos da Categoria: {selectedCategory.title}</h2>
           
-          <div className="mb-4 bg-page p-4 border-radius" style={{ maxWidth: '600px' }}>
-            <label className="font-bold mb-3 block">Adicionar nova foto nesta categoria</label>
-            <div className="mb-3">
-              <ImageUploader
-                value={newPhotoUrl}
-                onChange={setNewPhotoUrl}
-                label=""
-              />
-            </div>
-            <div className="flex" style={{ justifyContent: 'flex-end' }}>
-              <button className="btn btn-primary" onClick={handleAddPhoto} disabled={!newPhotoUrl}>
-                <Plus size={18} /> Adicionar Foto
-              </button>
-            </div>
+          <div className="mb-4 bg-page p-6 border-radius flex flex-col items-center justify-center text-center" 
+               style={{ border: '2px dashed var(--accent)', transition: 'all 0.3s' }}>
+            {uploadingBulk ? (
+              <div className="flex flex-col items-center p-4">
+                <Loader size={32} className="spinning text-accent mb-2" />
+                <p className="font-bold text-lg">Enviando imagens...</p>
+                <p className="text-muted text-sm mt-1">Isso pode levar alguns minutos. Por favor, aguarde.</p>
+              </div>
+            ) : (
+              <>
+                <Upload size={40} className="text-accent mb-3" />
+                <h3 className="font-bold text-lg mb-1">Adicionar Múltiplas Fotos</h3>
+                <p className="text-muted text-sm mb-4">Clique no botão abaixo ou arraste arquivos para enviar (JPG, PNG, WEBP)</p>
+                
+                <input 
+                  type="file" 
+                  multiple 
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  ref={fileInputRef} 
+                  style={{ display: 'none' }}
+                  onChange={handleBulkUpload}
+                />
+                
+                <button 
+                  className="btn btn-primary px-6 py-3 shadow-md hover:-translate-y-1 transition"
+                  style={{ borderRadius: '30px', fontWeight: 'bold' }}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Plus size={18} className="mr-2" /> Selecionar Arquivos
+                </button>
+              </>
+            )}
+          </div>
+
+          <div className="flex justify-between items-center mb-4">
+            <p className="text-muted">
+              {selectedPhotos.length} {selectedPhotos.length === 1 ? 'foto' : 'fotos'} cadastradas. 
+              <strong> Dica:</strong> Arraste e solte as fotos para reordenar.
+            </p>
           </div>
 
           {selectedPhotos.length === 0 ? (
-            <p className="text-muted">Nenhuma foto adicionada nesta categoria ainda.</p>
+            <p className="text-muted text-center p-8 bg-page border-radius">Nenhuma foto adicionada nesta categoria ainda.</p>
           ) : (
-            <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '1rem' }}>
-              {selectedPhotos.map(p => (
-                <div key={p.id} className="relative border-radius overflow-hidden" style={{ height: '150px', border: '1px solid var(--border)' }}>
-                  <img src={p.image_url} alt="Hero foto" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
+              {selectedPhotos.map((p, index) => (
+                <div 
+                  key={p.id} 
+                  className="relative border-radius overflow-hidden shadow-sm" 
+                  style={{ height: '200px', border: '1px solid var(--border)', cursor: 'grab' }}
+                  draggable
+                  onDragStart={() => (dragItem.current = index)}
+                  onDragEnter={() => (dragOverItem.current = index)}
+                  onDragEnd={handleSort}
+                  onDragOver={(e) => e.preventDefault()}
+                >
+                  <img src={p.image_url} alt="Hero foto" style={{ width: '100%', height: '100%', objectFit: 'cover' }} draggable={false} />
+                  
+                  {/* Overlay for drag handle */}
+                  <div className="absolute top-2 left-2 p-1 bg-black text-white border-radius" style={{ opacity: 0.7 }}>
+                    <Move size={16} />
+                  </div>
+
                   <button 
-                    className="absolute top-2 right-2 p-1 bg-red text-white border-radius"
-                    onClick={() => handleDeletePhoto(p.id)}
+                    className="absolute top-2 right-2 p-2 bg-red text-white border-radius shadow-sm hover:scale-110 transition"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeletePhoto(p.id);
+                    }}
                     title="Excluir"
                   >
                     <Trash2 size={16} />
