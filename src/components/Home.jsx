@@ -81,7 +81,6 @@ const Home = () => {
               <a href="#sobre">SOBRE</a>
               <a href="#servicos">SERVIÇOS</a>
               <Link to="/portfolio">PORTFÓLIO</Link>
-              <Link to="/depoimentos">DEPOIMENTOS</Link>
               <Link to="/blog">BLOG</Link>
               <a href="#contato">CONTATO</a>
             </nav>
