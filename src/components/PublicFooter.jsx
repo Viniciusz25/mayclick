@@ -14,8 +14,7 @@ const PublicFooter = () => {
         <div className="footer-grid">
           {/* BRAND */}
           <div className="footer-brand">
-            <img src="/logo.jpg" alt={`${businessName} Logo`} className="footer-logo" />
-            <h3 className="serif-title">{businessName}</h3>
+            <img src="/logo-nova.png" alt={`${businessName} Logo`} className="footer-logo" style={{height: '160px', width: 'auto'}} />
             <p className="tagline">"Nos permita registrar sua história!"</p>
           </div>
 
@@ -78,6 +77,7 @@ const PublicFooter = () => {
         </div>
 
         <div className="footer-bottom">
+          <p className="cnpj-text">Mayclick Producoes Audio &amp; Visual LTDA - 65990166000148</p>
           <p>&copy; {new Date().getFullYear()} {businessName}. Todos os direitos reservados.</p>
           <p className="disclaimer">As informações legais aqui contidas são bases informativas para uso da plataforma.</p>
         </div>
@@ -174,6 +174,15 @@ const PublicFooter = () => {
           padding-top: 2rem;
           border-top: 1px solid #222;
           color: #666;
+        }
+
+        .footer-bottom .cnpj-text {
+          font-family: 'Cormorant Garamond', serif;
+          font-weight: 500;
+          font-size: 1rem;
+          color: #a0a0a0;
+          margin-bottom: 0.75rem;
+          letter-spacing: 0.02em;
         }
 
         .footer-bottom p {

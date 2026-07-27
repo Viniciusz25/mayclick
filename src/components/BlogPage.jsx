@@ -28,8 +28,7 @@ const BlogPage = () => {
     <div className="home-luxury-wrapper">
       <header className="luxury-header">
         <div className="luxury-logo" onClick={() => navigate('/')} style={{cursor: 'pointer'}}>
-          <img src={businessSettings?.logo_url || "/logo.jpg"} alt="MayClick Photography" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
-          <span>MayClick</span>
+          <img src="/logo-nova.png" alt="MayClick Photography Logo" style={{height: '160px', width: 'auto', margin: '-30px 0'}} />
         </div>
         <nav className="luxury-nav">
           <button onClick={() => navigate('/')} style={{background:'transparent', border:'none', color:'#fff', cursor:'pointer', fontWeight:600, fontSize:'0.9rem', letterSpacing:'0.1em'}}>INÍCIO</button>

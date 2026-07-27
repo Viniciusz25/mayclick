@@ -116,6 +116,8 @@ const normalizeBusinessSettings = (settings = {}) => ({
     address: '',
     ...(settings.contact || {}),
   },
+  hide_prices: settings.hide_prices || false,
+  hide_promo_banner: settings.hide_promo_banner || false,
   pdf: {
     title: '',
     validity: '',
@@ -534,6 +536,34 @@ const BusinessSettings = () => {
                   <label>Instagram (@)</label>
                   <input className="form-control" value={formData.contact?.instagram || ''} onChange={(event) => handleNestedChange('contact.instagram', event.target.value)} />
                 </div>
+              </div>
+              
+              <div className="form-group mt-4 p-4 border rounded" style={{ borderColor: 'var(--border)' }}>
+                <label className="flex items-center gap-3 cursor-pointer" style={{ margin: 0 }}>
+                  <input 
+                    type="checkbox" 
+                    checked={formData.hide_prices === true}
+                    onChange={(e) => setFormData({ ...formData, hide_prices: e.target.checked })}
+                    style={{ width: '20px', height: '20px', accentColor: 'var(--accent)' }}
+                  />
+                  <div>
+                    <strong style={{ display: 'block', fontSize: '1.05rem' }}>Ocultar Valores no Site Público</strong>
+                    <span className="text-muted" style={{ fontSize: '0.85rem', fontWeight: 'normal' }}>Remove a exibição de preços (R$) do formulário de orçamento, mantendo-os visíveis apenas na administração.</span>
+                  </div>
+                </label>
+                
+                <label className="flex items-center gap-3 cursor-pointer mt-4" style={{ margin: '1rem 0 0 0' }}>
+                  <input 
+                    type="checkbox" 
+                    checked={formData.hide_promo_banner === true}
+                    onChange={(e) => setFormData({ ...formData, hide_promo_banner: e.target.checked })}
+                    style={{ width: '20px', height: '20px', accentColor: 'var(--accent)' }}
+                  />
+                  <div>
+                    <strong style={{ display: 'block', fontSize: '1.05rem' }}>Ocultar Faixa de Promoção (Top Banner)</strong>
+                    <span className="text-muted" style={{ fontSize: '0.85rem', fontWeight: 'normal' }}>Esconde a faixa promocional exibida no topo do site.</span>
+                  </div>
+                </label>
               </div>
             </section>
           )}

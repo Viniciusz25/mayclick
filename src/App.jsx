@@ -13,7 +13,6 @@ import PublicForm from './components/PublicForm';
 import Home from './components/Home';
 import SuccessPage from './components/SuccessPage';
 import ErrorBoundary from './components/ErrorBoundary';
-import Agenda from './components/Agenda';
 import HomepageSettings from './components/HomepageSettings';
 import PortfolioPage from './components/PortfolioPage';
 import CategoryGallery from './components/CategoryGallery';
@@ -56,7 +55,6 @@ const AdminLayout = ({ children, handleLogout }) => {
     { path: '/app/dashboard', label: 'Painel', icon: <LayoutDashboard size={20} /> },
     { path: '/app/orcamentos', label: 'Orçamentos', icon: <Calculator size={20} /> },
     { path: '/app/respostas', label: 'Respostas', icon: <FileText size={20} /> },
-    { path: '/app/agenda', label: 'Agenda', icon: <Calendar size={20} /> },
     { path: '/app/blog', label: 'Blog', icon: <FileText size={20} /> },
     { path: '/app/hero', label: 'Hero Principal', icon: <Star size={20} /> },
     { path: '/app/portfolio', label: 'Portfólio', icon: <Camera size={20} /> },
@@ -72,7 +70,7 @@ const AdminLayout = ({ children, handleLogout }) => {
       {/* MOBILE HEADER */}
       <header className="mobile-header">
         <div className="brand">
-          <img src="/logo.jpg" alt="Logo" className="brand-logo-small" />
+          <img src="/logo-nova.png" alt="Logo" className="brand-logo-small" />
           <span>Admin</span>
         </div>
         <button className="menu-toggle" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
@@ -85,7 +83,7 @@ const AdminLayout = ({ children, handleLogout }) => {
         <aside className={`admin-sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
           <div className="sidebar-header">
             <div className="brand">
-              <img src="/logo.jpg" alt="Logo" className="brand-logo-sidebar" />
+              <img src="/logo-nova.png" alt="Logo" className="brand-logo-sidebar" />
               <span>Mayclick <small>Admin</small></span>
             </div>
           </div>
@@ -485,7 +483,6 @@ function App() {
             <Route path="/app/orcamentos" element={<PrivateRoute><SavedBudgets /></PrivateRoute>} />
             <Route path="/app/orcamentos/novo" element={<PrivateRoute><ManualBudget /></PrivateRoute>} />
             <Route path="/app/orcamentos/:id" element={<PrivateRoute><BudgetDetails /></PrivateRoute>} />
-            <Route path="/app/agenda" element={<PrivateRoute><Agenda /></PrivateRoute>} />
             <Route path="/app/respostas" element={<PrivateRoute><Respostas /></PrivateRoute>} />
             <Route path="/app/respostas/:id" element={<PrivateRoute><SubmissionDetails /></PrivateRoute>} />
             <Route path="/app/blog" element={<PrivateRoute><AdminBlog /></PrivateRoute>} />

@@ -944,7 +944,7 @@ export const generateFichaTecnicaPdf = async ({ submission, businessSettings }) 
   let logoLoaded = false;
   try {
     const logoImg = new Image();
-    logoImg.src = '/logo.jpg';
+    logoImg.src = '/logo-nova.png';
     await new Promise((resolve) => {
       logoImg.onload = () => {
         doc.addImage(logoImg, 'JPEG', 132, 8, 48, 22);

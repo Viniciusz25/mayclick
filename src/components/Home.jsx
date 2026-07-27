@@ -74,8 +74,7 @@ const Home = () => {
         <section className="luxury-hero">
           <header className="luxury-header">
             <div className="luxury-logo">
-              <img src={businessSettings?.logo_url || "/logo.jpg"} alt="MayClick Photography" style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover' }} />
-              <span>MayClick</span>
+              <img src="/logo-nova.png" alt="MayClick Photography Logo" style={{height: '160px', width: 'auto', margin: '-30px 0'}} />
             </div>
             <nav className="luxury-nav">
               <Link to="/" className="active">INÍCIO</Link>
@@ -157,7 +156,7 @@ const Home = () => {
               <div key={cat.id} className="luxury-service-card" onClick={() => navigate(`/portfolio/${cat.slug}`)}>
                 <div className="luxury-service-bg"><img src={cat.cover_image_url || "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=800&auto=format&fit=crop"} alt={cat.title} /></div>
                 <div className="luxury-service-overlay">
-                  <div className="luxury-service-icon">✨</div>
+                  <div className="luxury-service-icon"></div>
                   <h3>{cat.title}</h3>
                   <p>{cat.description || "Conheça nosso trabalho"}</p>
                 </div>

@@ -493,7 +493,7 @@ const HomepageSettings = () => {
               </label>
 
               <div style={{ gridColumn: 'span 2', marginTop: '1rem', padding: '1rem', backgroundColor: 'var(--bg-page)', borderRadius: '8px', border: '1px solid var(--border)' }}>
-                <p style={{ color: 'var(--accent)', fontWeight: 'bold', marginBottom: '0.5rem' }}>✨ Novo Gerenciador de Hero</p>
+                <p style={{ color: 'var(--accent)', fontWeight: 'bold', marginBottom: '0.5rem' }}> Novo Gerenciador de Hero</p>
                 <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
                   A imagem de fundo e o carrossel animado agora são configurados em uma área exclusiva. 
                   Acesse <strong>"Hero Principal"</strong> no menu lateral para gerenciar as fotos do topo do seu site.

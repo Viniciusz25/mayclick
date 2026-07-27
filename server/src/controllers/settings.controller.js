@@ -23,6 +23,8 @@ const mapSettings = (settings = {}) => ({
   institutional_text: settings.institutional_text || '',
   payment_terms: settings.payment_terms || '',
   name: settings.trade_name || settings.company_name || '',
+  hide_prices: settings.hide_prices === true || settings.hide_prices === 'true',
+  hide_promo_banner: settings.hide_promo_banner === true || settings.hide_promo_banner === 'true',
   
   // Dynamic homepage fields
   hero_title: settings.hero_title || '',
@@ -196,6 +198,8 @@ export const updateSettings = async (req, res) => {
   const about_page_gallery_3 = firstText(payload.about_page_gallery_3);
 
   const form_page_image_url = firstText(payload.form_page_image_url);
+  const hide_prices = firstBoolean(payload.hide_prices);
+  const hide_promo_banner = firstBoolean(payload.hide_promo_banner);
 
   const homepage_layout = payload.homepage_layout ? JSON.stringify(payload.homepage_layout) : null;
 
@@ -218,9 +222,9 @@ export const updateSettings = async (req, res) => {
          form_page_image_url,
          homepage_layout, portfolio_active, highlights_active, about_active, testimonials_active, cta_active,
          portfolio_eyebrow, portfolio_title, portfolio_description, testimonials_eyebrow, testimonials_title, cta_title, cta_text, cta_button_text,
-         instagram_eyebrow, instagram_title, instagram_description)
+         instagram_eyebrow, instagram_title, instagram_description, hide_prices, hide_promo_banner)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, COALESCE($9, 5), $10, $11, $12, $13, $14, $15, $16,
-                $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $50, $51, $52, $53, $54, $55, $56, $57, $58, $59, $60, $61, $62, $63, $64, $65, $66, $67)
+                $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41, $42, $43, $44, $45, $46, $47, $48, $49, $50, $51, $52, $53, $54, $55, $56, $57, $58, $59, $60, $61, $62, $63, $64, $65, $66, $67, $68, $69)
         RETURNING *`,
         [
           company_name,
@@ -362,8 +366,10 @@ export const updateSettings = async (req, res) => {
         instagram_title = $65,
         instagram_description = $66,
         form_page_image_url = $67,
+        hide_prices = $68,
+        hide_promo_banner = $69,
         updated_at = CURRENT_TIMESTAMP
-        WHERE id = $68 RETURNING *`,
+        WHERE id = $70 RETURNING *`,
         [
           company_name,
           trade_name,
@@ -432,6 +438,8 @@ export const updateSettings = async (req, res) => {
           instagram_title,
           instagram_description,
           form_page_image_url,
+          hide_prices,
+          hide_promo_banner,
           check.rows[0].id,
         ]
       );

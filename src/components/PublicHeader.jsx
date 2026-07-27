@@ -13,12 +13,7 @@ const PublicHeader = () => {
       <TopBanner />
       <header className="luxury-header" style={{ position: 'relative', background: '#050505', borderBottom: '1px solid #222' }}>
       <div className="luxury-logo">
-        {businessSettings?.logo_url ? (
-          <img src={businessSettings.logo_url} alt="MayClick Photography" style={{height: '40px'}} />
-        ) : (
-          <div style={{color: '#c5a059', fontSize: '24px', fontFamily: 'Playfair Display'}}>M</div>
-        )}
-        <span>MayClick</span>
+        <img src="/logo-nova.png" alt="MayClick Photography Logo" className="header-logo" style={{height: '130px', width: 'auto', margin: '-20px 0'}} />
       </div>
       <nav className="luxury-nav">
         <Link to="/">INÍCIO</Link>

@@ -11,9 +11,10 @@ import { pricingData } from '../data/pricing';
 import { normalizePackage, featureToDisplayText, safeArray, safeText } from '../lib/packages';
 import PublicFooter from './PublicFooter';
 import CookieBanner from './CookieBanner';
-
+import useSettings from '../hooks/useSettings';
 const PublicForm = () => {
   const navigate = useNavigate();
+  const { businessSettings } = useSettings();
   const fallbackPackages = pricingData.packages || [];
   const [packages, setPackages] = useState([]);
   const [extras, setExtras] = useState([]);
@@ -318,10 +319,10 @@ const PublicForm = () => {
 
   const availableCategories = [...new Set(packages.map(p => p.category))].filter(Boolean);
   const getCategoryLabel = (c) => {
-    if (c === 'infantil') return '👶 Infantil';
-    if (c === 'adulto') return '🧑 Adulto';
-    if (c === 'debutante') return '👑 Debutante';
-    if (c === 'casamento') return '💍 Casamento';
+    if (c === 'infantil') return ' Infantil';
+    if (c === 'adulto') return ' Adulto';
+    if (c === 'debutante') return ' Debutante';
+    if (c === 'casamento') return ' Casamento';
     return c.charAt(0).toUpperCase() + c.slice(1);
   };
 
@@ -335,7 +336,7 @@ const PublicForm = () => {
             <ArrowLeft size={20} /> Voltar ao Início
           </button>
           <div className="brand">
-            <img src="/logo.jpg" alt="Logo" className="brand-logo" />
+            <img src="/logo-nova.png" alt="Logo" className="brand-logo" />
             <span className="brand-name">Mayclick</span>
           </div>
         </div>
@@ -729,11 +730,11 @@ const PublicForm = () => {
                   if (catPackages.length === 0) return null;
 
                   const getCatProps = (c) => {
-                    if (c === 'infantil') return { title: '👶 Infantil', color: '#E4C26A', bg: 'rgba(200, 155, 60, 0.1)' };
-                    if (c === 'adulto') return { title: '🧑 Adulto', color: '#F4E8C6', bg: 'rgba(230, 211, 163, 0.1)' };
-                    if (c === 'debutante') return { title: '👑 Debutante', color: '#E4B8B2', bg: 'rgba(201, 140, 132, 0.1)' };
-                    if (c === 'casamento') return { title: '💍 Casamento', color: '#F5D76E', bg: 'rgba(212, 175, 55, 0.1)' };
-                    return { title: '📸 Outros', color: 'var(--accent)', bg: 'rgba(255, 255, 255, 0.05)' };
+                    if (c === 'infantil') return { title: ' Infantil', color: '#E4C26A', bg: 'rgba(200, 155, 60, 0.1)' };
+                    if (c === 'adulto') return { title: ' Adulto', color: '#F4E8C6', bg: 'rgba(230, 211, 163, 0.1)' };
+                    if (c === 'debutante') return { title: ' Debutante', color: '#E4B8B2', bg: 'rgba(201, 140, 132, 0.1)' };
+                    if (c === 'casamento') return { title: ' Casamento', color: '#F5D76E', bg: 'rgba(212, 175, 55, 0.1)' };
+                    return { title: ' Outros', color: 'var(--accent)', bg: 'rgba(255, 255, 255, 0.05)' };
                   };
                   
                   const props = getCatProps(cat);
@@ -815,7 +816,9 @@ const PublicForm = () => {
                       <span className="selection-name">{extraHourOption.name}</span>
                       {extraHourOption.description && <p className="selection-desc">{extraHourOption.description}</p>}
                     </div>
-                    <strong>{Number(extraHourOption.price || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong>
+                    {!businessSettings?.hide_prices && (
+                      <strong>{Number(extraHourOption.price || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}</strong>
+                    )}
                   </div>
                   <label className="extra-quantity-control">
                     <span>Quantidade</span>
@@ -845,9 +848,11 @@ const PublicForm = () => {
                       <div className="selection-content">
                         <div className="selection-header">
                           <span className="selection-name">{extra.name}</span>
-                          <strong className="extra-price">
-                            {Number(extra.price || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
-                          </strong>
+                          {!businessSettings?.hide_prices && (
+                            <strong className="extra-price">
+                              {Number(extra.price || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                            </strong>
+                          )}
                         </div>
                         {extra.description && <p className="selection-desc">{extra.description}</p>}
                       </div>
@@ -988,11 +993,13 @@ const PublicForm = () => {
             <div className="modal-body">
               <div className="modal-pkg-header">
                 <h3 className="modal-pkg-title">{safeModalPackage.name || 'Pacote'}</h3>
-                <div className="modal-pkg-price-badge">
-                  {safeModalPackage.price > 0
-                    ? `R$ ${safeModalPackage.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
-                    : "Valor sob consulta"}
-                </div>
+                {!businessSettings?.hide_prices && (
+                  <div className="modal-pkg-price-badge">
+                    {safeModalPackage.price > 0
+                      ? `R$ ${safeModalPackage.price.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`
+                      : "Valor sob consulta"}
+                  </div>
+                )}
                 {safeModalPackage.installment_text && (
                   <p className="block-text">{safeModalPackage.installment_text}</p>
                 )}
