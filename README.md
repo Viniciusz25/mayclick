@@ -22,8 +22,8 @@ O sistema é dividido em duas partes principais:
 * **Bcryptjs & JWT:** Criptografia de senhas e autenticação segura (JSON Web Tokens).
 
 ### Hospedagem (Produção)
-* **HostGator:** Hospedagem dos arquivos estáticos do Frontend.
-* **Render.com:** Servidor de hospedagem em tempo real (zero-downtime) do Backend (API).
+* **Cloudflare Pages + Pages Functions:** Hospedagem unificada do Frontend (`dist/`) e do Backend Serverless (`functions/api/[[route]].js`) na borda (Edge) da Cloudflare, sem *cold starts* de hibernação.
+* **Supabase:** Banco de dados PostgreSQL e Storage de imagens/documentos.
 
 ---
 
@@ -107,12 +107,19 @@ O site estará disponível em `http://localhost:5173` e o painel administrativo 
 
 ---
 
-## 📦 Como Lançar para Produção (Build)
+## 📦 Como Lançar para Produção (Cloudflare Pages)
 
-1. Garanta que o seu arquivo `.env.production` na raiz aponte para a URL oficial da sua API no Render (Ex: `VITE_API_URL=https://sua-api.onrender.com`).
-2. Na raiz do projeto, execute o build do frontend:
-```bash
-npm run build
-```
-3. Todo o conteúdo otimizado será gerado na pasta `dist/`. Basta enviar os arquivos dessa pasta (incluindo os ocultos como `.htaccess`) para o seu servidor da HostGator via cPanel ou FTP.
-4. O Backend já terá sido atualizado automaticamente pelo Render após o seu `git push`.
+O projeto está configurado para rodar **Frontend + Backend (API)** juntos no **Cloudflare Pages** (usando *Cloudflare Pages Functions* em `functions/api/[[route]].js` e `wrangler.toml`):
+
+1. No painel da **Cloudflare** (`Workers & Pages` -> `Create` -> `Pages` -> `Connect to Git`), selecione o repositório do projeto.
+2. Em **Build settings**, configure:
+   * **Framework preset:** `Vite`
+   * **Build command:** `npm run build`
+   * **Build output directory:** `dist`
+3. Em **Settings -> Environment variables** (Production & Preview), adicione as variáveis do seu servidor:
+   * `DATABASE_URL`: URL de conexão do PostgreSQL do Supabase (recomendado usar a URL do **Transaction Pooler** porta `6543`)
+   * `JWT_SECRET`: Sua chave secreta para assinatura dos tokens JWT
+   * `SUPABASE_URL`: URL do projeto no Supabase
+   * `SUPABASE_SERVICE_KEY`: Chave `service_role` do Supabase (para upload de fotos e PDFs)
+   * `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_PRIVATE_KEY`, `GOOGLE_CALENDAR_ID` *(opcionais, caso use a integração com Google Calendar)*
+4. Faça o deploy — a flag `nodejs_compat` já está configurada automaticamente via `wrangler.toml`, o roteamento SPA está em `public/_redirects`, e todas as chamadas `/api/*` são roteadas automaticamente pela função `functions/api/[[route]].js`.

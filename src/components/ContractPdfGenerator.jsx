@@ -57,6 +57,45 @@ const sanitizeFileNamePart = (value, fallback = 'Cliente') => (
     .slice(0, 60) || fallback
 );
 
+const loadLogoForPdf = async () => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'Anonymous';
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth || img.width || 500;
+        canvas.height = img.naturalHeight || img.height || 500;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0);
+        const dataUrl = canvas.toDataURL('image/png');
+        resolve({ dataUrl, aspect: canvas.width / canvas.height });
+      } catch (err) {
+        resolve({ img, aspect: 1 });
+      }
+    };
+    img.onerror = () => {
+      const fallback = new Image();
+      fallback.crossOrigin = 'Anonymous';
+      fallback.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = fallback.naturalWidth || fallback.width || 500;
+          canvas.height = fallback.naturalHeight || fallback.height || 500;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(fallback, 0, 0);
+          resolve({ dataUrl: canvas.toDataURL('image/png'), aspect: canvas.width / canvas.height });
+        } catch {
+          resolve(null);
+        }
+      };
+      fallback.onerror = () => resolve(null);
+      fallback.src = '/logo.jpg';
+    };
+    img.src = '/logo-nova.png';
+  });
+};
+
 export const generateContractPdf = async ({ submission, budgetId, businessSettings }) => {
   const doc = new jsPDF('p', 'mm', 'a4');
 
@@ -111,27 +150,62 @@ export const generateContractPdf = async ({ submission, budgetId, businessSettin
 
   const currentDate = new Date().toLocaleDateString('pt-BR');
 
-  // --- HEADER ---
+  // --- HEADER WITH LOGO ---
+  const headerHeight = 38;
   doc.setFillColor(bgSoft[0], bgSoft[1], bgSoft[2]);
-  doc.rect(0, 0, pageWidth, 36, 'F');
+  doc.rect(0, 0, pageWidth, headerHeight, 'F');
+
+  // Top Gold Line Accent
+  doc.setFillColor(goldPrimary[0], goldPrimary[1], goldPrimary[2]);
+  doc.rect(0, 0, pageWidth, 2.5, 'F');
+
+  // Load & Position Logo
+  const logoInfo = await loadLogoForPdf();
+  let titleX = margin;
+  const logoSize = 25; // 25mm x 25mm (square logo aspect ratio)
+
+  if (logoInfo) {
+    const source = logoInfo.dataUrl || logoInfo.img;
+    try {
+      doc.addImage(source, 'PNG', margin, 6.5, logoSize, logoSize);
+      titleX = margin + logoSize + 4; // Shift title right of logo (~41mm)
+    } catch (e) {
+      console.warn('[PDF] Error drawing logo image:', e);
+    }
+  }
 
   // Title Left
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(21);
+  doc.setFontSize(16);
   doc.setTextColor(goldPrimary[0], goldPrimary[1], goldPrimary[2]);
-  doc.text("MAYCLICK PHOTOGRAPHY", margin, 23);
+  doc.text("MAYCLICK PHOTOGRAPHY", titleX, 18);
 
-  doc.setFontSize(12);
+  doc.setFontSize(11);
   doc.setTextColor(textDark[0], textDark[1], textDark[2]);
-  doc.text("ORÇAMENTO", margin, 31);
+  doc.text("ORÇAMENTO", titleX, 25);
+
+  doc.setFont("helvetica", "italic");
+  doc.setFontSize(7.8);
+  doc.setTextColor(textMuted[0], textMuted[1], textMuted[2]);
+  doc.text("Fotografia Profissional", titleX, 30.5);
 
   // Info Right
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(9.5);
+  doc.setTextColor(goldDark[0], goldDark[1], goldDark[2]);
+  doc.text(`ORÇAMENTO #${budgetNumber}`, pageWidth - margin, 18, { align: 'right' });
+
+  doc.setFont("helvetica", "normal");
   doc.setFontSize(8.5);
   doc.setTextColor(textMuted[0], textMuted[1], textMuted[2]);
-  doc.text(`ORÇAMENTO #${budgetNumber}`, pageWidth - margin, 23, { align: 'right' });
-  doc.text(`Data: ${currentDate}`, pageWidth - margin, 31, { align: 'right' });
+  doc.text(`Data: ${currentDate}`, pageWidth - margin, 25, { align: 'right' });
 
-  yPos = 45;
+  // Bottom Header Line
+  doc.setDrawColor(225, 215, 185);
+  doc.setLineWidth(0.4);
+  doc.line(margin, headerHeight, pageWidth - margin, headerHeight);
+
+  yPos = 46;
 
   // --- SENDER & RECEIVER ---
   doc.setFont("helvetica", "bold");
@@ -483,27 +557,62 @@ export const generateServiceContractPdf = async ({ submission, budgetId, busines
 
   const currentDate = new Date().toLocaleDateString('pt-BR');
 
-  // --- HEADER ---
+  // --- HEADER WITH LOGO ---
+  const headerHeight = 38;
   doc.setFillColor(bgSoft[0], bgSoft[1], bgSoft[2]);
-  doc.rect(0, 0, pageWidth, 36, 'F');
+  doc.rect(0, 0, pageWidth, headerHeight, 'F');
+
+  // Top Gold Line Accent
+  doc.setFillColor(goldPrimary[0], goldPrimary[1], goldPrimary[2]);
+  doc.rect(0, 0, pageWidth, 2.5, 'F');
+
+  // Load & Position Logo
+  const logoInfo = await loadLogoForPdf();
+  let titleX = margin;
+  const logoSize = 25;
+
+  if (logoInfo) {
+    const source = logoInfo.dataUrl || logoInfo.img;
+    try {
+      doc.addImage(source, 'PNG', margin, 6.5, logoSize, logoSize);
+      titleX = margin + logoSize + 4; // Shift title right of logo (~44mm)
+    } catch (e) {
+      console.warn('[PDF] Error drawing logo image in contract:', e);
+    }
+  }
 
   // Title Left
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(18);
+  doc.setFontSize(14);
   doc.setTextColor(goldPrimary[0], goldPrimary[1], goldPrimary[2]);
-  doc.text("CONTRATO DE PRESTAÇÃO DE SERVIÇOS", margin, 23);
+  doc.text("CONTRATO DE PRESTAÇÃO DE SERVIÇOS", titleX, 18);
 
-  doc.setFontSize(11);
+  doc.setFontSize(10);
   doc.setTextColor(textDark[0], textDark[1], textDark[2]);
-  doc.text("FOTOGRÁFICOS", margin, 31);
+  doc.text("FOTOGRÁFICOS", titleX, 25);
+
+  doc.setFont("helvetica", "italic");
+  doc.setFontSize(7.8);
+  doc.setTextColor(textMuted[0], textMuted[1], textMuted[2]);
+  doc.text("Mayclick Photography", titleX, 30.5);
 
   // Info Right
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(9.5);
+  doc.setTextColor(goldDark[0], goldDark[1], goldDark[2]);
+  doc.text(`CONTRATO #${budgetNumber}`, pageWidth - margin, 18, { align: 'right' });
+
+  doc.setFont("helvetica", "normal");
   doc.setFontSize(8.5);
   doc.setTextColor(textMuted[0], textMuted[1], textMuted[2]);
-  doc.text(`CONTRATO #${budgetNumber}`, pageWidth - margin, 23, { align: 'right' });
-  doc.text(`Data: ${currentDate}`, pageWidth - margin, 31, { align: 'right' });
+  doc.text(`Data: ${currentDate}`, pageWidth - margin, 25, { align: 'right' });
 
-  yPos = 50;
+  // Bottom Header Line
+  doc.setDrawColor(225, 215, 185);
+  doc.setLineWidth(0.4);
+  doc.line(margin, headerHeight, pageWidth - margin, headerHeight);
+
+  yPos = 48;
 
   // --- VARIABLES ---
   const pkg = submission.package || { name: submission.selectedPackageId || submission.selected_package_name || 'Personalizado', price: 0 };
@@ -942,20 +1051,16 @@ export const generateFichaTecnicaPdf = async ({ submission, businessSettings }) 
   }
 
   let logoLoaded = false;
-  try {
-    const logoImg = new Image();
-    logoImg.src = '/logo-nova.png';
-    await new Promise((resolve) => {
-      logoImg.onload = () => {
-        doc.addImage(logoImg, 'JPEG', 132, 8, 48, 22);
-        logoLoaded = true;
-        resolve();
-      };
-      logoImg.onerror = () => resolve();
-      setTimeout(resolve, 350);
-    });
-  } catch {
-    // Text wordmark below is the fallback.
+  const logoInfo = await loadLogoForPdf();
+  if (logoInfo) {
+    const source = logoInfo.dataUrl || logoInfo.img;
+    try {
+      const logoSize = 25; // 25mm x 25mm square logo
+      doc.addImage(source, 'PNG', 142, 6, logoSize, logoSize);
+      logoLoaded = true;
+    } catch (e) {
+      console.warn('[PDF] Could not draw logo in ficha técnica:', e);
+    }
   }
 
   if (!logoLoaded) {

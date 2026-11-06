@@ -1,0 +1,53 @@
+====================================================================
+  APRESENTACAO EXECUTIVA DA PLATAFORMA DIGITAL - MAYCLICK
+====================================================================
+
+Esta pasta contem todos os arquivos necessarios para apresentar
+o projeto em qualquer computador, mesmo sem conexao com a internet.
+
+--------------------------------------------------------------------
+COMO USAR NO PENDRIVE:
+--------------------------------------------------------------------
+1. Copie toda a pasta "APRESENTACAO_PENDRIVE" para o seu Pendrive.
+2. Ao conectar o pendrive no computador da apresentacao, voce pode:
+   - Dar 2 cliques em "Abrir_Apresentacao.bat", OU
+   - Dar 2 cliques em "Apresentacao_MayClick.html" (ou "index.html").
+3. A apresentacao abrira imediatamente no navegador (Chrome, Edge, etc.).
+
+--------------------------------------------------------------------
+ATALHOS E CONTROLES DURANTE A APRESENTACAO:
+--------------------------------------------------------------------
+- Seta para a Direita (->) ou Barra de Espaco : Proximo Slide
+- Seta para a Esquerda (<-) ou Backspace      : Slide Anterior
+- Tecla 'F'                                   : Entrar / Sair de Tela Cheia
+- Tecla 'Home' / 'End'                        : Primeiro / Ultimo Slide
+- Tecla 'Esc'                                 : Fechar visualizacao de Zoom ou Indice
+- Clicar em qualquer print de tela            : Zoom / Ampliar imagem em alta resolucao
+
+--------------------------------------------------------------------
+BOTOES NO TOPO DA TELA:
+--------------------------------------------------------------------
+- [Apresentar ▶] : Passagem automatica de slides (Modo Slideshow).
+- [Indice 📑]    : Menu em grade para saltar direto a qualquer tela.
+- [PDF 🖨️]       : Exportar toda a apresentacao em formato PDF ou imprimir.
+- [Tela Cheia ⛶]: Modo imersivo para projecao e reunioes.
+
+--------------------------------------------------------------------
+CONTEUDO DOS 12 SLIDES:
+--------------------------------------------------------------------
+Slide 01 - Visao Geral da Solucao Integrada
+Slide 02 - Pagina Inicial (Hero) & Vitrine Principal
+Slide 03 - Nossas Especialidades (Servicos de Ensaios)
+Slide 04 - Portfolio Categorizado & Galerias
+Slide 05 - Formulario Guiado de Atendimento & Captacao
+Slide 06 - Sobre Mim & Conexao Afetiva
+Slide 07 - Blog & Marketing de Conteudo (Dicas de Ensaios)
+Slide 08 - Painel de Controle Geral (Dashboard Administrativo)
+Slide 09 - Gestao de Solicitacoes & Historico de Clientes
+Slide 10 - Elaboracao de Propostas & Escopos Customizados
+Slide 11 - Editor Visual da Marca (Autonomia de Banners)
+Slide 12 - Sintese de Valor & Resultados para o Negocio
+
+* Apresentacao 100% focada em funcionalidades e beneficios comerciais,
+  sem termos tecnicos e sem valores/tabelas de precos.
+====================================================================

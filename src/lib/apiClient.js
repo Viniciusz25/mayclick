@@ -1,4 +1,4 @@
-const DEFAULT_API_ORIGIN = import.meta.env.PROD ? '/api' : 'http://localhost:4000';
+const DEFAULT_API_ORIGIN = '/api';
 
 const isLocalhostUrl = (rawUrl = '') => (
   /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?(\/|$)/i.test(rawUrl)
